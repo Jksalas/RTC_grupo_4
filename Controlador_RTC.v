@@ -23,7 +23,11 @@ module Controlador_RTC(
 	 output hsync,vsync,
 	 output ADo,CSo,RDo,WRo,
 	 inout [7:0] AdressDatao,
-    output [2:0] rgb
+    output [2:0] rgb,
+	 output [1:0] mstate,
+	 output [3:0] istate, Lstate, ustate,
+	 output [2:0] PFHstate, PTstate, rstate, wstate
+
     );
 	 
 reg AD,CS,RD,WR;
@@ -44,7 +48,7 @@ FSM_RTC Master(clock, reset,PFH, PT, donew, doner, wrmuxselec, win, rin, datatyp
 ReadCycle Lectura(clock, reset, rin, readselec, doner, rstate, rAD, rCS, rRD, rWR, rTS, reg_enable) ;
 WriteCycle Escritura(clock, reset, win, writeselec, donew, wstate, wAD, wCS, wRD, wWR, wTS) ;
 
-ControlUsuario Usuario(clock, BTNP, BTNR, BTNL, BTNU, BTND, switchp, ustate, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
+ControlUsuario Usuario(clock, reset, BTNP, BTNR, BTNL, BTNU, BTND, switchp, ustate, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
 
 
 assign PFH = BTNP & ~switchp;

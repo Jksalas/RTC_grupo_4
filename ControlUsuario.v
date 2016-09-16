@@ -18,8 +18,8 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module ControlUsuario (clk, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch, state, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
-	input clk, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch; //Declarion de  entradas y salidas
+module ControlUsuario (clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch, state, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
+	input clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch; //Declarion de  entradas y salidas
 	output[3:0] state; //salida de prueba
 	output [7:0] diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw; //registros de salida
 	reg [3:0] next_state, state ; // variables de estado
@@ -121,6 +121,7 @@ parameter [3:0] Tseg = 4'b1100; //Programar segundos crono
 		endcase
 	end
 	
+	//Control de Usuarios por botones
 	always @(posedge clk) begin
 		case(state)
 		   P0:{diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw} = {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw} ;
@@ -258,7 +259,10 @@ parameter [3:0] Tseg = 4'b1100; //Programar segundos crono
 	
 	always @(posedge clk) 
 		begin
-			state <= next_state;
+			if (reset)
+				state = P0;
+			else
+				state <= next_state;
 		end
 	
 endmodule
