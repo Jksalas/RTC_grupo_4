@@ -9,7 +9,7 @@
 // Project Name:
 // Target Devices:
 // Tool versions:
-// Description:
+// Description: ESTE MODULO ES PARA IMPRIMIR LAS LETRAS EN LA PANTALLA
 //
 // Dependencies:
 //
@@ -22,25 +22,21 @@ module GENERADOR(
 	 input [9:0] pix_y, pix_x,
 	 input wire video_on,
 	 input clk,reset,
-	 output reg [2:0] rgbtext,
-	 output wire [5:0] adress1,
-	 output wire Fono, Eono, Cono,Hono,Aono,Tono, Iono, Rono,Oono,Mono
+	 output reg [11:0] rgbtext
+
     );
 
-
-
 	//SECCION GENERADOR DE TEXTO EN LA PANTALLA
-
 
 	// CONSTANTES Y DECLARACIONES
 
 	wire [2:0] lsbx;
 	wire [3:0] lsby;
-	assign lsbx = pix_x[4:2];
-	assign lsby = pix_y[6:3];
+	assign lsbx = pix_x[3:1];
+	assign lsby = pix_y[4:1];
 
 	reg [3:0] sel_car;
-	reg [2:0] letter_rgb;
+	reg [11:0] letter_rgb;
 
 	wire caja1,caja2,caja3;
 	assign caja1 =	(95<=pix_x) && (pix_x<=175) &&	(62<=pix_y) && (pix_y<=128);
@@ -50,93 +46,34 @@ module GENERADOR(
 	wire [7:0] Data;
 	reg [1:0] AD;
 
-	// x , y coordinates (0.0) to (639,479)
-	localparam maxx = 640;
-	localparam maxy = 480;
-
-	// Letter boundaries
-	localparam Fxl = 128;
-	localparam Fxr = 159;
-	localparam Exl = 160;localparam Exl2 = 224;
-	localparam Exr = 191;localparam Exr2 = 255;
-	localparam Cxl = 192;
-	localparam Cxr = 223;
-	localparam Hxl = 0;localparam Hxl2 = 224;
-	localparam Hxr = 31;localparam Hxr2 = 255;
-	localparam Axl = 96;localparam Axl2 = 256;
-	localparam Axr = 127;localparam Axr2 = 287;
-
-	localparam Txr = 128;
-	localparam Txl = 159;
-	localparam Ixr = 160;
-	localparam Ixl = 191;
-	localparam Rxr = 64;localparam Rxll = 256;
-	localparam Rxl = 95;localparam Rxrr = 287;
-	localparam Oxr = 32;
-	localparam Oxl = 63;
-	localparam Mxr = 192;
-	localparam Mxl = 223;
-
-	//limites verticales
-	localparam yt = 0;
-	localparam yb = 127;
-
-	localparam ytt = 256;
-	localparam ybb = 384;
-
-	localparam yttt = 385;
-	localparam ybbb = 512;
-
-
-	// letter output signals
-
-	// CUERPO
-
 	wire Fon, Eon, Con,Hon,Aon,Ton, Ion, Ron,Oon,Mon;
-	wire on_0,on_1,on_2,on_3,on_4,on_5,on_6, on_7,on_8,on_9;
-	wire ring;
-	assign  Fono=Fon;
- 	assign	Eono=Eon;
-	assign	Cono=Con;
-	assign	Hono=Hon;
-	assign	Aono=Aon;
-	assign	Tono=Ton;
-	assign	Iono=Ion;
- 	assign  Rono=Ron;
-	assign	Oono=Oon;
-	assign	Mono=Mon;
-
 
 //letras activacion
-	assign Hon =((Hxl<=pix_x) && (pix_x<=Hxr) &&(yt<=pix_y) && (pix_y<=yb))|
-	((Hxl2<=pix_x) && (pix_x<=Hxr2) &&(ytt<=pix_y) && (pix_y<=ybb));
+	assign Hon =((64<=pix_x) && (pix_x<=79) &&(64<=pix_y) && (pix_y<=95))|
+	((96<=pix_x) && (pix_x<=111) &&(192<=pix_y) && (pix_y<=223));
+
+	assign Fon =(48<=pix_x) && (pix_x<=63) &&(192<=pix_y) && (pix_y<=223);
+
+	assign Eon =((64<=pix_x) && (pix_x<=79) && (192<=pix_y) && (pix_y<=223))|(
+		(112<=pix_x) && (pix_x<=127) && (320<=pix_y) && (pix_y<=351));
+
+	assign Con =(80<=pix_x) && (pix_x<=95) &&(192<=pix_y) && (pix_y<=223);
+
+	assign Aon =((112<=pix_x) && (pix_x<=127) &&	(64<=pix_y) && (pix_y<=95))|
+	((112<=pix_x) && (pix_x<=127) &&(192<=pix_y) && (pix_y<=223));
+
+	assign Ton =	(64<=pix_x) && (pix_x<=79) &&	(320<=pix_y) && (pix_y<=351);
+
+	assign Ion =	(80<=pix_x) && (pix_x<=95) &&	(320<=pix_y) && (pix_y<=351);
+
+	assign Ron =	((96<=pix_x) && (pix_x<=111) &&(64<=pix_y) && (pix_y<=95))|
+	((128<=pix_x) && (pix_x<=143) &&(320<=pix_y) && (pix_y<=351));
+
+	assign Oon =	(80<=pix_x) && (pix_x<=95) &&(64<=pix_y) && (pix_y<=95);
+
+	assign Mon =	(96<=pix_x) && (pix_x<=111) &&(320<=pix_y) && (pix_y<=351);
 
 
-	assign Fon =(Fxl<=pix_x) && (pix_x<=Fxr) &&(ytt<=pix_y) && (pix_y<=ybb);
-
-	assign Eon =((Exl<=pix_x) && (pix_x<=Exr) && (ytt<=pix_y) && (pix_y<=ybb))|(
-			(Exl2<=pix_x) && (pix_x<=Exr2) && (yttt<=pix_y) && (pix_y<=ybbb));
-
-	assign Con =(Cxl<=pix_x) && (pix_x<=Cxr) &&(ytt<=pix_y) && (pix_y<=ybb);
-
-
-
-	assign Aon =((Axl<=pix_x) && (pix_x<=Axr) &&	(yt<=pix_y) && (pix_y<=yb))|
-	((Axl2<=pix_x) && (pix_x<=Axr2) &&(ytt<=pix_y) && (pix_y<=ybb));
-
-
-	assign Ton =	(128<=pix_x) && (pix_x<=159) &&	(385<=pix_y) && (512<=ybbb);
-
-	assign Ion =	(160<=pix_x) && (pix_x<=191) &&	(385<=pix_y) && (pix_y<=512);
-
-	assign Ron =	((64<=pix_x) && (pix_x<=95) &&(yt<=pix_y) && (pix_y<=yb))|
-	((Rxll<=pix_x) && (pix_x<=Rxrr) &&(yttt<=pix_y) && (pix_y<=ybbb));
-
-	assign Oon =	(32<=pix_x) && (pix_x<=63) &&(0<=pix_y) && (pix_y<=127);
-
-	assign Mon =	(192<=pix_x) && (pix_x<=223) &&(385<=pix_y) && (pix_y<=512);
-
-	assign ring=  (575<=pix_x) && (pix_x<=606)&&(385<=pix_y) && (pix_y<=512);
 
 
 	always @(posedge clk,posedge reset) begin
@@ -180,7 +117,7 @@ module GENERADOR(
 	    end
 	end
 
-	ROM1 FONT(AD,lsby,Data,adress1,sel_car);
+	ROM1 FONT(AD,lsby,Data,sel_car);
 
 
 	reg pixelbit;
@@ -201,7 +138,7 @@ module GENERADOR(
 
 	always @*
 		if (pixelbit)
-			letter_rgb <= 1;
+			letter_rgb <= 12'hfff;
 		else
 			letter_rgb <= 0;
 
@@ -210,14 +147,14 @@ module GENERADOR(
 	//**************************************************
 	always@*
 		if(~video_on)
-			rgbtext=3'b000;
+			rgbtext=0;
 		else begin
 
 
 			if (Fon|Eon|Con|Hon|Aon|Ton|Ron|Oon|Ion|Mon)
 				rgbtext = letter_rgb;
 				else
-				rgbtext=3'b000;
+				rgbtext=0;
 			end
 
 endmodule
