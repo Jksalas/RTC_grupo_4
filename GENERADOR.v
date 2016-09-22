@@ -19,10 +19,11 @@
 //
 //////////////////////////////////////////////////////////////////////////////////
 module GENERADOR(
+
 	 input [9:0] pix_y, pix_x,
 	 input wire video_on,
 	 input clk,reset,
-	 output reg [11:0] rgbtext
+	 output [11:0] rgbtext
 
     );
 
@@ -32,16 +33,16 @@ module GENERADOR(
 
 	wire [2:0] lsbx;
 	wire [3:0] lsby;
-	assign lsbx = pix_x[3:1];
-	assign lsby = pix_y[4:1];
+
+	reg [2:0] lsbx_reg;
+	reg [3:0] lsby_reg;
+	assign lsbx = lsbx_reg;
+	assign lsby = lsby_reg;
 
 	reg [3:0] sel_car;
 	reg [11:0] letter_rgb;
 
-	wire caja1,caja2,caja3;
-	assign caja1 =	(95<=pix_x) && (pix_x<=175) &&	(62<=pix_y) && (pix_y<=128);
-	assign caja2 =	(95<=pix_x) && (pix_x<=175) &&	(62<=pix_y) && (pix_y<=128);
-	assign caja3 =	(95<=pix_x) && (pix_x<=175) &&	(62<=pix_y) && (pix_y<=128);
+
 
 	wire [7:0] Data;
 	reg [1:0] AD;
@@ -74,14 +75,22 @@ module GENERADOR(
 	assign Mon =	(96<=pix_x) && (pix_x<=111) &&(320<=pix_y) && (pix_y<=351);
 
 
-
-
-	always @(posedge clk,posedge reset) begin
+/*
+input okfechaword;
+input okhoraword;
+input oktimerword;
+*/
+always @(posedge clk,posedge reset) begin
 	if(reset) begin
 		AD<=0;
 		sel_car<=0;
+		lsbx_reg<=0;
+		lsby_reg<=0;
+
 	end
 	else begin
+	lsbx_reg<=pix_x[3:1];
+	lsby_reg<=pix_y[4:1];
 		if (Fon) begin
 			AD <= 2'h1;
 			sel_car<=1;end
@@ -117,13 +126,16 @@ module GENERADOR(
 	    end
 	end
 
-	ROM1 FONT(AD,lsby,Data,sel_car);
+	ROM FONT(reset,AD,lsby,Data,sel_car);
 
 
 	reg pixelbit;
 
 
 	always @*
+	if(reset)
+				pixelbit<=0;
+	else begin
 	case (lsbx)
 		3'h00: pixelbit <= Data[7];
 		3'h01: pixelbit <= Data[6];
@@ -133,28 +145,34 @@ module GENERADOR(
 		3'h05: pixelbit <= Data[2];
 		3'h06: pixelbit <= Data[1];
 		3'h07: pixelbit <= Data[0];
-
+		default:pixelbit<=0;
 	endcase
+	end
 
 	always @*
+	if(reset)
+			letter_rgb<=0;
+	else begin
 		if (pixelbit)
 			letter_rgb <= 12'hfff;
 		else
-			letter_rgb <= 0;
+			letter_rgb <= 0;end
 
 	//**************************************************
 	//*********SALIDAS , MULTIPLEXADO*********************************************************
 	//**************************************************
+	reg [11:0] rgbtext1;
 	always@*
 		if(~video_on)
-			rgbtext=0;
+			rgbtext1<=0;
 		else begin
 
 
 			if (Fon|Eon|Con|Hon|Aon|Ton|Ron|Oon|Ion|Mon)
-				rgbtext = letter_rgb;
+				rgbtext1 <= letter_rgb;
 				else
-				rgbtext=0;
+				rgbtext1<=0;
 			end
+assign rgbtext=rgbtext1;
 
 endmodule
