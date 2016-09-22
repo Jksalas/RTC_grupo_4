@@ -21,8 +21,8 @@
 module CUADROS(
 	input [9:0] pix_y, pix_x,
 	 input wire video_on,
-	 input clk,reset,
-	 output reg [11:0] rgbtext
+	 input reset,
+	 output  [11:0] rgbtext
 
 );
 	 //*********************************************************
@@ -614,27 +614,32 @@ module CUADROS(
 //**********************************************************************
 //------------------------------------------------------------------
 
+wire [11:0] color;
+assign color=12'h227;
 
-
+reg [11:0] rgbtext1;
 always@*
+if(reset)
+		rgbtext1<=0;
+else begin
 	if(~video_on)
-		rgbtext=0;
+		rgbtext1<=0;
 	else begin
 		if (grandec2h_on | grandec1h_on | grandec1v_on |grandec2v_on | grandef2h_on | grandef1h_on | grandef2v_on | grandef1v_on | grande2h_on | grande1h_on | grande2v_on | grande1v_on)
-			rgbtext=12'h0f0;
+			rgbtext1<=color;
 		else if (media1v_on | media2v_on | media1h_on | media2h_on |media1v2_on | media2v2_on|media1h2_on |media2h2_on |media1v3_on | media2v3_on|media1h3_on |media2h3_on)
-			rgbtext=12'h0f0;
+			rgbtext1<=color;
 		else if(fecha1v_on | fecha2v_on | fecha1h_on | fecha2h_on |fecha1v2_on | fecha2v2_on | fecha1h2_on | fecha2h2_on |fecha1v3_on | fecha2v3_on | fecha1h3_on | fecha2h3_on)
-			rgbtext=12'h0f0;
+			rgbtext1<=color;
 		else if(crono1v_on | crono2v_on | crono1h_on | crono2h_on |crono1v2_on | crono2v2_on | crono1h2_on | crono2h2_on |crono1v3_on | crono2v3_on | crono1h3_on | crono2h3_on)
-			rgbtext=12'h0f0;
+			rgbtext1<=color;
 			else if(B2h2_on | B1h2_on |B1v2_on | B2v2_on|B2h2b_on | B1h2b_on |B1v2b_on | B2v2b_on|B2h2c_on | B1h2c_on |B1v2c_on | B2v2c_on)
-				rgbtext=12'h0f0;
+				rgbtext1<=color;
 		else
-		rgbtext=0;
+		rgbtext1<=0;
 
-
+		end
 	end
-
+assign rgbtext=rgbtext1;
 
 endmodule
