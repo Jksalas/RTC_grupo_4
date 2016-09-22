@@ -38,6 +38,7 @@ parameter [3:0] Trst = 4'b1001; //Reseteo timer
 parameter [3:0] Thora = 4'b1010; //Programar hora crono
 parameter [3:0] Tmin = 4'b1011; //Programar minutos crono
 parameter [3:0] Tseg = 4'b1100; //Programar segundos crono
+parameter [3:0] A = 4'b1101;
 
 	always @(posedge clk) begin //Lógica de siguiente estado
 		case(state)
@@ -253,14 +254,15 @@ parameter [3:0] Tseg = 4'b1100; //Programar segundos crono
 							tsegw = tsegw - 8'h7;
 						else
 							tsegw = tsegw - 8'h1;
-			default: {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw} = {8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff } ; //Evita warning de Latch
+			A: {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw} = {8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff } ;
+			default: {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw} = {8'h1, 8'h1, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0 } ; //Evita warning de Latch
 		endcase
 	end 
 	
 	always @(posedge clk) 
 		begin
 			if (reset)
-				state = P0;
+				state <= P0;
 			else
 				state <= next_state;
 		end
