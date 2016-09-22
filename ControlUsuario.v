@@ -268,4 +268,3 @@ parameter [3:0] A = 4'b1101;
 		end
 	
 endmodule
-

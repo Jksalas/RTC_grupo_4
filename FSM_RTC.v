@@ -367,7 +367,7 @@ assign OK = (estado_actual_L == L10 && doner);
 
 
 //Señal selectora de Mux A/D y Mux VGA
-always @(posedge clock)
+always @(estado_actual_m)
 	case (estado_actual_m)
 		m0: wrmuxselec = 1'b1;
 		m1: wrmuxselec = 1'b0;
@@ -377,7 +377,7 @@ always @(posedge clock)
 	endcase
 	
 //Señal selectora de Datai o Userdata
-always @(posedge clock)
+always @(estado_actual_m)
 	case (estado_actual_m)
 		m0: datatype = 1'b1;
 		m1: datatype = 1'b0;
@@ -387,7 +387,7 @@ always @(posedge clock)
 	endcase	
 
 //Datos y Direcciones de Inicialización
-always @(posedge clock)
+always @(estado_actual_i)
 	case (estado_actual_i)
 		i0: {datai,addri} = {8'h00,8'h00};
 		i1: {datai,addri} = {8'h10,8'h02};
@@ -407,7 +407,7 @@ always @(posedge clock)
 	endcase
 
 //Direcciones de Standby (Lectura)
-always @(posedge clock)
+always @(estado_actual_L)
 	case (estado_actual_L)
 		L0: addrL = 8'h00;
 		L1: addrL = 8'hF1;
@@ -424,7 +424,7 @@ always @(posedge clock)
 	endcase
 
 //Direcciones para Programar Fecha/Hora
-always @(posedge clock)
+always @(estado_actual_PFH)
 	case (estado_actual_PFH)
 		PFH0: addrPFH = 8'h00;
 		PFH1: addrPFH = 8'h26;
@@ -438,7 +438,7 @@ always @(posedge clock)
 	endcase
 
 //Direcciones para Programar Temporizador
-always @(posedge clock)
+always @(estado_actual_PT)
 	case (estado_actual_PT)
 		PT0: addrPT = 8'h00;
 		PT1: addrPT = 8'h43;
@@ -450,7 +450,7 @@ always @(posedge clock)
 	endcase
 
 //Enable de procesos escritura
-always @(posedge clock or mstate)
+always @*
 	case (estado_actual_m)
 		m0: if (estado_actual_i != i0)
 				win = 1'b1;
@@ -471,7 +471,7 @@ always @(posedge clock or mstate)
 	endcase
 
 //Enable de procesos lectura
-always @(posedge clock)
+always @*
 	case (estado_actual_m)
 		m0: rin = 1'b0;
 				
@@ -485,7 +485,7 @@ always @(posedge clock)
 	endcase
 
 //Multiplexor de Adress
-always @(posedge clock)
+always @*
 	case (estado_actual_m)
 		m0: address = addri;
 		m1: address = addrL;

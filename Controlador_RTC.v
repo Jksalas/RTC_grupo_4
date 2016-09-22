@@ -22,7 +22,7 @@ module Controlador_RTC(
     input clock,reset,BTNP,BTNU,BTND,BTNR,BTNL,switchp,IRQ,ringoff,
 	 output hsync,vsync,
 	 output ADo,CSo,RDo,WRo,
-	 inout [7:0] AdressDatao,
+	 inout  [7:0] AdressDatao,
     output [2:0] rgb,
 	 output [1:0] mstate,
 	 output [3:0] istate, Lstate, ustate,
@@ -37,9 +37,11 @@ reg [7:0] AdressData;
 assign AdressDatao = AdressData;
 //wire PFH, PT, donew, doner, wrmuxseleco, win, rin;
 wire [7:0] datai, address;
+/*
 wire [1:0] mstate;
 wire [3:0] istate, Lstate, ustate;
 wire [2:0] PFHstate, PTstate, rstate, wstate;
+*/
 reg TS;
 reg selecAD;
 reg [7:0] outAD,datamux,userdata;
@@ -55,7 +57,7 @@ ControlUsuario Usuario(clock, reset, BTNP, BTNR, BTNL, BTNU, BTND, switchp, usta
 assign PFH = BTNP & ~switchp;
 assign PT = BTNP & switchp;
 
-always @(posedge clock)
+always @*
 	case (mstate)
 		2'b00: {AD,CS,RD,WR,TS} = {wAD,wCS,wRD,wWR,wTS};
 		2'b01: {AD,CS,RD,WR,TS} = {rAD,rCS,rRD,rWR,rTS};
@@ -65,7 +67,7 @@ always @(posedge clock)
 	endcase	
 
 //Multiplexor de Data de Usuario
-always @(posedge clock)
+always @*
 	if (mstate == 2'b10)
 		case (PFHstate)
 		3'b000: userdata = 8'h00;
@@ -92,7 +94,7 @@ always @(posedge clock)
 			userdata = 8'h00;
 
 //Multiplexor de tipo de Data
-always @(posedge clock)
+always @*
 	case (datatype)
 		1'b0: datamux = userdata;
 		1'b1: datamux = datai;
@@ -100,7 +102,7 @@ always @(posedge clock)
 	endcase
 
 //Multiplexor de seleccion A/D
-always @(posedge clock)
+always @*
 	case (wrmuxselec)
 		1'b0: selecAD = readselec;
 		1'b1: selecAD = writeselec;
@@ -108,7 +110,7 @@ always @(posedge clock)
 	endcase
 	
 //Multiplexor A/D
-always @(posedge clock)
+always @*
 	case (selecAD)
 		1'b0: outAD = address;
 		1'b1: outAD = datamux;
@@ -116,7 +118,7 @@ always @(posedge clock)
 	endcase	
 		
 //Buffer de Tercer Estado
-always @(posedge clock)
+always @*
 	if (TS)
 		AdressData = 8'hzz;
 	else
@@ -132,7 +134,7 @@ reg [7:0] anno_vga,
 			 thora_vga,
 			 tmin_vga,
 			 tseg_vga;
-always @(posedge clock)
+always @*
 	case (Lstate)
 		4'b0000: {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
 		4'b0001: {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
@@ -186,7 +188,7 @@ reg [7:0] anno,
 			 thora,
 			 tmin,
 			 tseg;
-always @(posedge clock)
+always @*
 	if (wrmuxselec)
 		{anno,mes,dia,rhora,rmin,rseg,thora,tmin,tseg} = {annow,mesw,diaw,rhoraw,rminw,rsegw,thoraw,tminw,tsegw};
 	else

@@ -20,15 +20,13 @@
 //////////////////////////////////////////////////////////////////////////////////
 
 module WriteCycle(clk, rst, in, ad_mux, write_end, state, AD, CS, RD, WR, TS) ;
-//Declaracion de entradas  salidas
-	input clk, in, rst ; 
+	input clk, in, rst ; // in triggers start of flash sequence
 	output AD, CS, RD, WR, TS, ad_mux, write_end; 
 	output[2:0] state; 
-	
-	reg [2:0] next_state, state ; 
-	reg [1:0] tsel ; //Selecciona valor de cuenta
+	reg [2:0] next_state, state ; // current state
+	reg [1:0] tsel ;
 	reg tload, write_end, AD, CS, RD, WR, TS, ad_mux;
-	wire timer_end; //Termina la cuenta
+	wire timer_end;
 	
 parameter [2:0] W0 = 3'b000; //Hold State/ Espera señal de la master
 parameter [2:0] W1 = 3'b001; //Waits tADs Adress mode
@@ -39,9 +37,9 @@ parameter [2:0] W5 = 3'b101; //tCS y Data detectada
 parameter [2:0] W6 = 3'b110; //Salida y retorno
 	
 	
-// Instanciar el timer
-Timer WriteTimer(clk, rst, tload, tsel, timer_end) ;
-// Lógica de siguiente estado y salidas  al timer
+// instantiate timer
+Timer ReadTimer(clk, rst, tload, tsel, timer_end) ;
+// next state and output logic
 	always @(state or in or timer_end) begin
 		case(state)
 			W0: {tload, tsel, next_state} = {1'b1, 2'b10, in ? W1 : W0} ;
@@ -54,7 +52,7 @@ Timer WriteTimer(clk, rst, tload, tsel, timer_end) ;
 			default: {tload, tsel, next_state} = {1'b0, 2'b00, W0 } ;
 		endcase
 	end
-	//Salidas de estado de control RTC y otros
+	
 	always @(state or in or timer_end) begin
 		TS = 1'b0; 
 		case(state)
@@ -68,7 +66,7 @@ Timer WriteTimer(clk, rst, tload, tsel, timer_end) ;
 			default: {AD, CS, RD, WR, ad_mux, write_end} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0 } ;
 		endcase
 	end
-	//Asignación de siguiente estado
+	
 	always @(posedge clk) begin
 		if (rst) begin
 		state <= W0;

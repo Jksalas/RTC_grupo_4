@@ -22,24 +22,21 @@
 
 
 module Timer(clk, rst, tload, tsel, done) ;
-//Entradas y Salidas
 input clk, rst, tload;
 input [1:0] tsel ;
-output done;
-
-//Variable de cueta y cuenta siguiente
+output done ;
 reg [3:0] count ;
 reg [3:0] next_count ;
 reg done ;
 
-//Definición de cantidad a contas
+
 parameter [3:0] tADs = 4'd3;
 parameter [3:0] tACC = 4'd7;
 parameter [3:0] tW = 4'd12;
 
+//DFF #(8) Timer_State(clk, next_count, count) ; //Registro de estado
 
-
-// Lógica de siguiente cuenta
+// next count logic
 always@(rst or tload or tsel or done or count) begin
 casex({rst, tload, tsel, done})
 5'b1xxxx: next_count = 4'b0;
@@ -51,7 +48,7 @@ casex({rst, tload, tsel, done})
 default: next_count = count;
 endcase
 end
-//Asignación de siguiente cuenta
+
 always @(posedge clk) begin
 	 count <= next_count;
 end
