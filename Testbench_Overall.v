@@ -41,6 +41,7 @@ module Testbench_Overall;
 	 wire [2:0] PTstate_tb;
 	 wire [2:0] rstate_tb;
 	 wire [2:0] wstate_tb;
+	 wire win_tb;
 
 	Controlador_RTC dut(
 	.clock (clock_tb),
@@ -63,7 +64,8 @@ module Testbench_Overall;
 	.PFHstate (PFHstate_tb),
 	.PTstate (PTstate_tb),
 	.rstate (rstate_tb),
-	.wstate (wstate_tb)
+	.wstate (wstate_tb),
+	.win (win_tb) 
 	);
 	
 	
@@ -88,16 +90,51 @@ initial
 			
 			#10
 			reset_tb = 0;
-			/*#50
+			
+			#500000
+			BTNP_tb = 1;
+			
+			#10 
+			BTNP_tb = 0;
+			
+			#10
+			BTNU_tb = 1;
+			
+			#40
+			BTNU_tb = 0;
+			
+			#10
+			BTNR_tb = 1;
+			
+			#10
+			BTNR_tb = 0;
+			
+			#10
+			BTNU_tb = 1;
+			
+			
+			#30
+			BTNU_tb = 0;
+			
+			#10
+			BTNR_tb = 1;
+			
+			#10
+			BTNR_tb = 0;
+			
+			#10
+			BTND_tb = 1;
+			
+			#50
+			BTND_tb = 0;
+			
+			#10
 			BTNP_tb = 1;
 			
 			#10
 			BTNP_tb = 0;
 			
-			#20
-			BTNU_tb = 1;
-			*/
-			#4000
+			#500000
 			$stop;
 		end
 	
