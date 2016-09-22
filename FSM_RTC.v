@@ -22,7 +22,7 @@ module FSM_RTC(
     input wire clock, reset, PFH, PT, doner, donew,
     output wire wrmuxseleco, wino, rino, datatypeo,
 	 output wire [7:0]dataio, [7:0]addresso,
-	 output wire [1:0] mstate, [3:0] Lstate, [2:0] PFHstate, [2:0] PTstate
+	 output wire [1:0] mstate, [3:0] istate, [3:0] Lstate, [2:0] PFHstate, [2:0] PTstate
     );
 
 wire Endi,Endpfh,Endpt,OK;
@@ -90,7 +90,7 @@ assign mstate = estado_actual_m;
 assign Lstate = estado_actual_L;
 assign PFHstate = estado_actual_PFH;
 assign PTstate = estado_actual_PT;
-
+assign istate = estado_actual_i;
 
 //Registro de Estados Master FSM 
 always @(posedge clock, posedge reset)
@@ -360,10 +360,10 @@ assign dataio = datai;
 assign addresso = address;
 
 //Transición de estados FSM
-assign Endi = (estado_actual_i == i13);
-assign Endpfh = (estado_actual_PFH == PFH7);
-assign Endpt = (estado_actual_PT == PT4);
-assign OK = (estado_actual_L == L10);
+assign Endi = (estado_actual_i == i13 && donew);
+assign Endpfh = (estado_actual_PFH == PFH7 && donew);
+assign Endpt = (estado_actual_PT == PT4 && donew);
+assign OK = (estado_actual_L == L10 && doner);
 
 
 //Señal selectora de Mux A/D y Mux VGA
@@ -450,7 +450,7 @@ always @(posedge clock)
 	endcase
 
 //Enable de procesos escritura
-always @(posedge clock)
+always @(posedge clock or mstate)
 	case (estado_actual_m)
 		m0: if (estado_actual_i != i0)
 				win = 1'b1;

@@ -26,7 +26,8 @@ module Controlador_RTC(
     output [2:0] rgb,
 	 output [1:0] mstate,
 	 output [3:0] istate, Lstate, ustate,
-	 output [2:0] PFHstate, PTstate, rstate, wstate
+	 output [2:0] PFHstate, PTstate, rstate, wstate,
+	 output win
 
     );
 	 
@@ -44,7 +45,7 @@ reg selecAD;
 reg [7:0] outAD,datamux,userdata;
 wire [7:0] diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw;	 
 
-FSM_RTC Master(clock, reset,PFH, PT, donew, doner, wrmuxselec, win, rin, datatype, datai, address, mstate, Lstate, PFHstate, PTstate);
+FSM_RTC Master(clock, reset,PFH, PT, doner, donew, wrmuxselec, win, rin, datatype, datai, address, mstate, istate, Lstate, PFHstate, PTstate);
 ReadCycle Lectura(clock, reset, rin, readselec, doner, rstate, rAD, rCS, rRD, rWR, rTS, reg_enable) ;
 WriteCycle Escritura(clock, reset, win, writeselec, donew, wstate, wAD, wCS, wRD, wWR, wTS) ;
 
@@ -105,12 +106,12 @@ always @(posedge clock)
 		1'b1: selecAD = writeselec;
 		default : selecAD = readselec;
 	endcase
-
+	
 //Multiplexor A/D
 always @(posedge clock)
 	case (selecAD)
-		1'b0: outAD = datamux;
-		1'b1: outAD = address;
+		1'b0: outAD = address;
+		1'b1: outAD = datamux;
 		default : outAD = address;
 	endcase	
 		
