@@ -16,7 +16,9 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//hecho por : JOAO SALAS RAMIREZ
+//Este modulo imprime los simbolos en la pantalla, los simbolos son: los puntos que separan las horas y las barras que separan
+//la fecha
 //////////////////////////////////////////////////////////////////////////////////
 module SIMBOLOS(
 input okmaquina,
@@ -62,7 +64,7 @@ always @(posedge clk) begin
       if(reset) begin
           AD<=0;
           sel_car<=0;
-        	lsby_reg<= 0;
+        	 lsby_reg<= 0;
           lsbx_reg<= 0;
         end
       else if (okmaquina) begin
@@ -86,10 +88,17 @@ always @(posedge clk) begin
             		else if (~barrafecha)
             			state<=h0;
       			   	end
-              default:  state<=h0;
+              default: begin  state<=h0;sel_car<=15;AD <=2'h3; end
 
         		endcase
-  end
+				end
+		else begin
+		    AD<=1;
+          sel_car<=15;
+        	 lsby_reg<= 0;
+          lsbx_reg<= 0;
+			 end
+
 end
 
 
@@ -114,14 +123,14 @@ end
         pixelbit<=0;
     else begin
       case (lsbx)
-        3'h00: pixelbit <= Data_rom[7];
-        3'h01: pixelbit <= Data_rom[6];
-        3'h02: pixelbit <= Data_rom[5];
-        3'h03: pixelbit <= Data_rom[4];
-        3'h04: pixelbit <= Data_rom[3];
-        3'h05: pixelbit <= Data_rom[2];
-        3'h06: pixelbit <= Data_rom[1];
-        3'h07: pixelbit <= Data_rom[0];
+        0: pixelbit <= Data_rom[7];
+        1: pixelbit <= Data_rom[6];
+        2: pixelbit <= Data_rom[5];
+        3: pixelbit <= Data_rom[4];
+        4: pixelbit <= Data_rom[3];
+        5: pixelbit <= Data_rom[2];
+        6: pixelbit <= Data_rom[1];
+        7: pixelbit <= Data_rom[0];
         default:pixelbit<=0;
       endcase
       end
@@ -131,7 +140,7 @@ end
         letter_rgb<=0;
     else begin
         if (pixelbit)
-          letter_rgb <= 12'hfff;
+          letter_rgb <= 12'h0ff;
         else
           letter_rgb <= 0;end
     //--------------------------------------------
@@ -142,7 +151,7 @@ reg [11:0]rgbtext1;
 always@*
   if(~video_on)
         rgbtext1<=0;
-    else begin
+   else begin
           if (barrafecha | ruedaon1)
               rgbtext1 <= letter_rgb;
           else
