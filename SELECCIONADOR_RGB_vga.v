@@ -16,9 +16,11 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//hecho por: joao salas ramirez
+//este modulo se encarga de seleccionar cual caracter, numero, simbolo... debe desplegarse en la pantalla
+//de acuerdo a la coordenada actual
 //////////////////////////////////////////////////////////////////////////////////
-module SELECCCIONADOR_RGBmodule SELECCIONADOR_RGB(
+module SELECCIONADOR_RGB(
 input clk,
     input wire video_on,reset,
     input wire [9:0] pix_x,pix_y,
