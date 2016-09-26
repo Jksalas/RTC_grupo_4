@@ -17,7 +17,7 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//hecho por: JOAO SALAS RAMIREZ
 module ROM1(
 input reset,
 input wire [1:0]AD,
@@ -35,12 +35,12 @@ adress <= {AD,lsby};
 
 always @*
 //LETRAS
-if(reset) 
+if(reset)
 		data <=0;
 else begin
 if (sel_caracter==1) begin
 	case (adress)
-		6'h10: data <= 8'b00000000;  //la F
+		16: data <= 8'b00000000;  //la F
 		6'h11: data <= 8'b00111110;
 		6'h12: data <= 8'b01000000;
 		6'h13: data <= 8'b01000000;
@@ -92,16 +92,13 @@ if (sel_caracter==1) begin
 		6'h3d: data <= 8'b00111110;
 		6'h3e: data <= 8'b00000000;
 		6'h3f: data <= 8'b00000000;
-	default : data <= 8'b00000000;
+	default : data <= 8'b11111111;
 	endcase
 	end
 
 else if(sel_caracter==2)begin
 	case (adress)
-
-		6'h00: data <= 8'b00000000;//H
-		6'h01: data <= 8'b01000010;
-		6'h02: data <= 8'b01000010;
+b01000010;
 		6'h03: data <= 8'b01000010;
 		6'h04: data <= 8'b01000010;
 		6'h05: data <= 8'b01000010;
@@ -171,7 +168,7 @@ else if(sel_caracter==2)begin
 		6'h3e: data <= 8'b00000000;
 		6'h3f: data <= 8'b00000000;
 
-		default : data <= 8'b00000000;
+		default : data <= 8'b11111111;
 		endcase
 
 	end
@@ -517,16 +514,12 @@ else if(sel_caracter==7)begin
 		6'h0e: data <= 8'b00000000;
 		6'h0f: data <= 8'b00000000;
 
-
-
-
-
-
-
 		default : data <= 8'b00000000;
 		endcase
 
 	end
+else
+	data <= 8'b00000000;
 end
 
 endmodule
