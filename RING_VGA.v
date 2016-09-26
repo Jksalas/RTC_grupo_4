@@ -16,10 +16,11 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//HECHO ṔOR: Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
 module RING(
-  input okmaquina,
+	 input activar_alarma,
+    input okmaquina,
     input [9:0] pix_y, pix_x,
     input wire video_on,
     input clk,reset,
@@ -77,7 +78,7 @@ always @(posedge clk) begin
 
 	      end
 
-	else if(okmaquina) begin
+	else if(okmaquina && activar_alarma) begin
       case(state)
       h1: begin
     		if (on_ring) begin
@@ -100,9 +101,19 @@ always @(posedge clk) begin
             state<=h1;
         end
 
-        default:  state<=h1;
+        default:  begin state<=h1;AD <= 2'h3;  //primeros 6 numeros
+        			sel_car<=15;end
       endcase
 	end
+	else begin
+    		AD<=1;
+    		sel_car<=15;
+
+    		lsby_reg<=0;
+    		lsbx_reg<=0;
+
+	      end
+
 end
 
 
@@ -113,14 +124,14 @@ if(reset)
       pixelbit<=0;
 else begin
 	case (lsbx)
-		3'h00: pixelbit <= Data[7];
-		3'h01: pixelbit <= Data[6];
-		3'h02: pixelbit <= Data[5];
-		3'h03: pixelbit <= Data[4];
-		3'h04: pixelbit <= Data[3];
-		3'h05: pixelbit <= Data[2];
-		3'h06: pixelbit <= Data[1];
-		3'h07: pixelbit <= Data[0];
+		0: pixelbit <= Data[7];
+		1: pixelbit <= Data[6];
+		2: pixelbit <= Data[5];
+		3: pixelbit <= Data[4];
+		4: pixelbit <= Data[3];
+		5: pixelbit <= Data[2];
+		6: pixelbit <= Data[1];
+		7: pixelbit <= Data[0];
     default:pixelbit<=0;
 	endcase
 end
@@ -131,7 +142,7 @@ always @*
       letter_rgb<=0;
   else begin
 		  if (pixelbit)
-			   letter_rgb <= 12'hfff;
+			   letter_rgb <= 12'hf00;
 		  else
 			    letter_rgb <= 0;end
 //--------------------------------------------
