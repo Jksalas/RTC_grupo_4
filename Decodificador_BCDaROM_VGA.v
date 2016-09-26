@@ -16,7 +16,7 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//hecho por: Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
 module DECODER(
   input enable,
@@ -26,7 +26,7 @@ module DECODER(
     );
 
 always@* begin
-   if(enable) begin
+	 if(enable) begin
           case(bcd_num)
              4'b0000 :begin
                   address_out_reg = 2'h0;
@@ -62,6 +62,8 @@ always@* begin
              default:  begin address_out_reg = 0;sel_address_out_reg=0;end
         	endcase
 		  end
+		  else begin
+		   address_out_reg = 0;sel_address_out_reg=0;end
 		end
 
 
