@@ -18,7 +18,12 @@
 // 
 // Revision:
 // Revision 0.01 - File Created
-// Additional Comments:
+// Additional Comment:
+//hecho por: Joao Salas Ramirez
+//este testbench generar un archivo simulando la pantalla vga, se le aplican unos simples estimulos 
+//a la señales de entrada y luego se imprima el valor de salida de la señal rgb
+//la señal rgb se codifica en tres bits en el archivo de texto
+//este archivo se puede revisar en el directorio del proyecto como un .txt
 // 
 ////////////////////////////////////////////////////////////////////////////////
 module TESTBENCH;
@@ -88,14 +93,19 @@ module TESTBENCH;
 
 		// Wait 100 ns for global reset to finish
 		//PRIMERA PANTALLA
+		//se generan señales de reset para tener todos los registros inicializados
+//*************************************************
 		#100
 		reset=1;
 		#10
 		reset=0;
-    #10
+    		#10
 		reset = 1;
+		//----------------------------------------
+		//*************************************************************
 
 		//arranca la primer pantalla
+		//***************************************************
 		
 		#50
 		activar_alarma=1;
@@ -109,6 +119,7 @@ module TESTBENCH;
 		fecha_in1 = 8'b01100011;
 		fecha_in2 = 8'b10010111;
 		fecha_in3 = 8'b01000000;
+		//---------------------------------------------------------------
 		    //archivo txt para observar los bits, simulando una pantalla
 		    i = $fopen("joaoVGA.txt","w");
 		    for(j=0;j<383520;j=j+1) begin
@@ -122,11 +133,14 @@ module TESTBENCH;
 		    #16800000
 		    $fclose(i);
 		   // $stop;
-				#100
+		#100
+		
+		//**********************************************************************************
 				//SEGUNDA PANTALLA
+		//*************************************************************************************
 				reset=1;
-		#10
-		reset=0;
+				#10
+				reset=0;
 				activar_alarma=0;
 				reset = 0;
 				timer_in1 = 8'b00000001;
@@ -138,7 +152,7 @@ module TESTBENCH;
 				fecha_in1 = 8'b01000011;
 				fecha_in2 = 8'b10010111;
 				fecha_in3 = 8'b00000000;
-
+//----------------------------------------------------------------
 				//archivo txt para observar los bits, simulando una pantalla
 
 				i = $fopen("joaoVGA2.txt","w");
@@ -161,9 +175,11 @@ module TESTBENCH;
 				reset=1;
 		#10
 		reset=0;
+		//*************************************************************************
 				
-				
+	        //****************************************************************	
 				//tercera pantalla
+		//**********************************************************
 				activar_alarma=1;
 				reset = 0;
 				timer_in1 = 8'b01100101;
@@ -195,7 +211,7 @@ module TESTBENCH;
 				$stop;
 		end
 
-
+//fin de las tres pantallas simuladas.
 
 
 endmodule
