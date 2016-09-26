@@ -312,8 +312,8 @@ module CUADROS(
 
 //vertical1
 
-	localparam fecha1v2_left=317;
-	localparam fecha1v2_right=320;
+	localparam fecha1v2_left=307;
+	localparam fecha1v2_right=310;
 	localparam fecha1v2_y_t = 182;  //listo
 	localparam fecha1v2_y_b = 265;
 	wire  fecha1v2_on;
@@ -329,7 +329,7 @@ module CUADROS(
 	assign fecha2v2_on = (fecha2v2_left<=pix_x) && (pix_x<=fecha2v2_right) &&
 	(fecha2v2_y_t<=pix_y) && (pix_y<=fecha2v2_y_b);
 //horizontal1
-	localparam fecha1h2_left=321;
+	localparam fecha1h2_left=311;
 	localparam fecha1h2_right=388;
 	localparam fecha1h2_y_t = 182;//ok
 	localparam fecha1h2_y_b = 185;
@@ -337,7 +337,7 @@ module CUADROS(
 	assign fecha1h2_on = (fecha1h2_left<=pix_x) && (pix_x<=fecha1h2_right) &&
 	(fecha1h2_y_t<=pix_y) && (pix_y<=fecha1h2_y_b);
 //horizontal2
-	localparam fecha2h2_left=321;
+	localparam fecha2h2_left=311;
 	localparam fecha2h2_right=388;
 	localparam fecha2h2_y_t = 262;//ok
 	localparam fecha2h2_y_b = 265;
@@ -615,31 +615,38 @@ module CUADROS(
 //------------------------------------------------------------------
 
 wire [11:0] color;
-assign color=12'h227;
+assign color=12'h00f;
 
 reg [11:0] rgbtext1;
 always@*
 if(reset)
 		rgbtext1<=0;
 else begin
-	if(~video_on)
-		rgbtext1<=0;
-	else begin
-		if (grandec2h_on | grandec1h_on | grandec1v_on |grandec2v_on | grandef2h_on | grandef1h_on | grandef2v_on | grandef1v_on | grande2h_on | grande1h_on | grande2v_on | grande1v_on)
-			rgbtext1<=color;
-		else if (media1v_on | media2v_on | media1h_on | media2h_on |media1v2_on | media2v2_on|media1h2_on |media2h2_on |media1v3_on | media2v3_on|media1h3_on |media2h3_on)
-			rgbtext1<=color;
-		else if(fecha1v_on | fecha2v_on | fecha1h_on | fecha2h_on |fecha1v2_on | fecha2v2_on | fecha1h2_on | fecha2h2_on |fecha1v3_on | fecha2v3_on | fecha1h3_on | fecha2h3_on)
-			rgbtext1<=color;
-		else if(crono1v_on | crono2v_on | crono1h_on | crono2h_on |crono1v2_on | crono2v2_on | crono1h2_on | crono2h2_on |crono1v3_on | crono2v3_on | crono1h3_on | crono2h3_on)
-			rgbtext1<=color;
-			else if(B2h2_on | B1h2_on |B1v2_on | B2v2_on|B2h2b_on | B1h2b_on |B1v2b_on | B2v2b_on|B2h2c_on | B1h2c_on |B1v2c_on | B2v2c_on)
-				rgbtext1<=color;
-		else
-		rgbtext1<=0;
+	case(video_on)
+	0: begin
+			rgbtext1<=12'h000;
+			end
 
-		end
-	end
+	1: begin
+				if (grandec2h_on | grandec1h_on | grandec1v_on |grandec2v_on | grandef2h_on | grandef1h_on | grandef2v_on | grandef1v_on | grande2h_on | grande1h_on | grande2v_on | grande1v_on)
+					rgbtext1<=color;
+				else if (media1v_on | media2v_on | media1h_on | media2h_on |media1v2_on | media2v2_on|media1h2_on |media2h2_on |media1v3_on | media2v3_on|media1h3_on |media2h3_on)
+					rgbtext1<=color;
+				else if(fecha1v_on | fecha2v_on | fecha1h_on | fecha2h_on |fecha1v2_on | fecha2v2_on | fecha1h2_on | fecha2h2_on |fecha1v3_on | fecha2v3_on | fecha1h3_on | fecha2h3_on)
+					rgbtext1<=color;
+				else if(crono1v_on | crono2v_on | crono1h_on | crono2h_on |crono1v2_on | crono2v2_on | crono1h2_on | crono2h2_on |crono1v3_on | crono2v3_on | crono1h3_on | crono2h3_on)
+					rgbtext1<=color;
+				else if(B2h2_on | B1h2_on |B1v2_on | B2v2_on|B2h2b_on | B1h2b_on |B1v2b_on | B2v2b_on|B2h2c_on | B1h2c_on |B1v2c_on | B2v2c_on)
+						rgbtext1<=color;
+				else
+				rgbtext1<=12'h000;
+
+	   end
+	default:
+		rgbtext1<=12'hfff;
+	endcase
+end
+
 assign rgbtext=rgbtext1;
 
 endmodule
