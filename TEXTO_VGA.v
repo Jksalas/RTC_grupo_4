@@ -16,7 +16,8 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//Creador:
+// Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
 module GENERADOR(
 
@@ -75,11 +76,7 @@ module GENERADOR(
 	assign Mon =	(96<=pix_x) && (pix_x<=111) &&(320<=pix_y) && (pix_y<=351);
 
 
-/*
-input okfechaword;
-input okhoraword;
-input oktimerword;
-*/
+//este parte se utiliza para imprimir las letras de acuerdo a la coordenada, es una maquina de estados camuflada
 always @(posedge clk,posedge reset) begin
 	if(reset) begin
 		AD<=0;
@@ -121,8 +118,8 @@ always @(posedge clk,posedge reset) begin
 		else if (Mon)begin
 			AD <= 2'h2;
 			sel_car<=3;end
-		else
-			AD <= 2'h0;
+		else begin
+			AD <= 2'h0;sel_car<=15;end
 	    end
 	end
 
@@ -137,14 +134,14 @@ always @(posedge clk,posedge reset) begin
 				pixelbit<=0;
 	else begin
 	case (lsbx)
-		3'h00: pixelbit <= Data[7];
-		3'h01: pixelbit <= Data[6];
-		3'h02: pixelbit <= Data[5];
-		3'h03: pixelbit <= Data[4];
-		3'h04: pixelbit <= Data[3];
-		3'h05: pixelbit <= Data[2];
-		3'h06: pixelbit <= Data[1];
-		3'h07: pixelbit <= Data[0];
+		0: pixelbit <= Data[7];
+		1: pixelbit <= Data[6];
+		2: pixelbit <= Data[5];
+		3: pixelbit <= Data[4];
+		4: pixelbit <= Data[3];
+		5: pixelbit <= Data[2];
+		6: pixelbit <= Data[1];
+		7: pixelbit <= Data[0];
 		default:pixelbit<=0;
 	endcase
 	end
@@ -154,7 +151,7 @@ always @(posedge clk,posedge reset) begin
 			letter_rgb<=0;
 	else begin
 		if (pixelbit)
-			letter_rgb <= 12'hfff;
+			letter_rgb <= 12'hccc;
 		else
 			letter_rgb <= 0;end
 
@@ -166,12 +163,12 @@ always @(posedge clk,posedge reset) begin
 		if(~video_on)
 			rgbtext1<=0;
 		else begin
-
-
 			if (Fon|Eon|Con|Hon|Aon|Ton|Ron|Oon|Ion|Mon)
 				rgbtext1 <= letter_rgb;
-				else
+			else if(~Fon|~Eon|~Con|~Hon|~Aon|~Ton|~Ron|~Oon|~Ion|~Mon)
 				rgbtext1<=0;
+			else
+				rgbtext1<=12'b111111111111;
 			end
 assign rgbtext=rgbtext1;
 
