@@ -16,17 +16,37 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//Hecho por: Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
 module HOURNUMBERS(
-  input okmaquina,
-input [9:0] pix_y, pix_x,
-input wire video_on,
-input clk,reset,
-output wire [11:0] rgbtext,
-input [7:0] hour_in1,hour_in2,hour_in3
+		input okmaquina,
+		input [9:0] pix_y, pix_x,
+		input wire video_on,
+		input clk,reset,
+		output wire [11:0] rgbtext,
+		input [7:0] hour_in1,hour_in2,hour_in3
 
 );
+
+wire hora_1,hora_2,hora_3,hora_4,hora_5,hora_6;
+
+
+//------------------------------------------------------
+// ACTIVADORES DE numeros
+//-------------------------------------------------------------
+//-----------------------------------------------------
+//COORDENADAS DONDE SE PIENSA IMPRIMIR
+//-------------------------------------------------------------
+//numeros de hora 64x32   //en c van de 192 a 447
+	assign hora_1 =(192<=pix_x) && (pix_x<=223) &&(64<=pix_y) && (pix_y<=127);
+	assign hora_2 =(224<=pix_x) && (pix_x<=255) && (64<=pix_y) && (pix_y<=127);
+  //separacion
+	assign hora_3 =(320<=pix_x) && (pix_x<=351) &&(64<=pix_y) && (pix_y<=127);
+	assign hora_4 =(352<=pix_x) && (pix_x<=383) && (64<=pix_y) && (pix_y<=127);
+  //separacion
+	assign hora_5 =(448<=pix_x) && (pix_x<=479) &&(64<=pix_y) && (pix_y<=127);
+	assign hora_6 =(480<=pix_x) && (pix_x<=511) &&(64<=pix_y) && (pix_y<=127);
+
 
 
 
@@ -150,28 +170,14 @@ always @(posedge clk) begin
 
 					endcase
 			end
+		else begin
+			bcd_to_deco<=0;
+			lsby_reg<=0;
+			lsbx_reg<=0;
+			enablereg<=0;end
 end
 
 //***************************************************
-wire hora_1,hora_2,hora_3,hora_4,hora_5,hora_6;
-
-
-//------------------------------------------------------
-// ACTIVADORES DE numeros
-//-------------------------------------------------------------
-//-----------------------------------------------------
-//COORDENADAS DONDE SE PIENSA IMPRIMIR
-//-------------------------------------------------------------
-//numeros de hora 64x32   //en c van de 192 a 447
-	assign hora_1 =(192<=pix_x) && (pix_x<=223) &&(64<=pix_y) && (pix_y<=127);
-	assign hora_2 =(224<=pix_x) && (pix_x<=255) && (64<=pix_y) && (pix_y<=127);
-  //separacion
-	assign hora_3 =(320<=pix_x) && (pix_x<=351) &&(64<=pix_y) && (pix_y<=127);
-	assign hora_4 =(352<=pix_x) && (pix_x<=383) && (64<=pix_y) && (pix_y<=127);
-  //separacion
-	assign hora_5 =(448<=pix_x) && (pix_x<=479) &&(64<=pix_y) && (pix_y<=127);
-	assign hora_6 =(480<=pix_x) && (pix_x<=511) &&(64<=pix_y) && (pix_y<=127);
-
 
 //logica de salida
   always @*
@@ -179,14 +185,14 @@ wire hora_1,hora_2,hora_3,hora_4,hora_5,hora_6;
         pixelbit<=0;
   else begin
       case (lsbx)
-        3'h00: pixelbit <= Data_rom[7];
-        3'h01: pixelbit <= Data_rom[6];
-        3'h02: pixelbit <= Data_rom[5];
-        3'h03: pixelbit <= Data_rom[4];
-        3'h04: pixelbit <= Data_rom[3];
-        3'h05: pixelbit <= Data_rom[2];
-        3'h06: pixelbit <= Data_rom[1];
-        3'h07: pixelbit <= Data_rom[0];
+        0: pixelbit <= Data_rom[7];
+        1: pixelbit <= Data_rom[6];
+        2: pixelbit <= Data_rom[5];
+        3: pixelbit <= Data_rom[4];
+        4: pixelbit <= Data_rom[3];
+        5: pixelbit <= Data_rom[2];
+        6: pixelbit <= Data_rom[1];
+        7: pixelbit <= Data_rom[0];
         default:pixelbit<=0;
       endcase
 end
@@ -196,7 +202,7 @@ if(reset)
     letter_rgb<=0;
 else begin
       if (pixelbit)
-        letter_rgb <= 12'hfff;
+        letter_rgb <= 12'h0ff;
       else
         letter_rgb <= 0;end
     //--------------------------------------------
@@ -206,7 +212,7 @@ reg [11:0] rgbtext1;
 always@*
   if(~video_on)
         rgbtext1<=0;
-    else begin
+  else begin
           if ( hora_1|hora_2|hora_3|hora_4|hora_5|hora_6)
               rgbtext1 <= letter_rgb;
           else
