@@ -16,7 +16,7 @@
 // Revision:
 // Revision 0.01 - File Created
 // Additional Comments:
-//
+//creado por: Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
 module DATENUMBERS(
     input okmaquina,
@@ -33,9 +33,9 @@ module DATENUMBERS(
 
     assign enable=enablereg;
 
-    reg pixelbit;
+     reg pixelbit;
 	  wire [2:0] lsbx;
-  	wire [3:0] lsby;
+  	  wire [3:0] lsby;
 	  reg [2:0] lsbx_reg;
 	  reg [3:0] lsby_reg;
 
@@ -146,6 +146,11 @@ always @(posedge clk) begin
 
 					endcase
 			end
+			else begin
+			bcd_to_deco<=0;
+			lsby_reg<=0;
+			lsbx_reg<=0;
+			enablereg<=0;end
 
 end
 
@@ -174,14 +179,14 @@ end
               pixelbit<=0;
         else begin
         	case (lsbx)
-        		3'h00: pixelbit <= Data_rom[7];
-        		3'h01: pixelbit <= Data_rom[6];
-        		3'h02: pixelbit <= Data_rom[5];
-        		3'h03: pixelbit <= Data_rom[4];
-        		3'h04: pixelbit <= Data_rom[3];
-        		3'h05: pixelbit <= Data_rom[2];
-        		3'h06: pixelbit <= Data_rom[1];
-        		3'h07: pixelbit <= Data_rom[0];
+        		0: pixelbit <= Data_rom[7];
+        		1: pixelbit <= Data_rom[6];
+        		2: pixelbit <= Data_rom[5];
+        		3: pixelbit <= Data_rom[4];
+        		4: pixelbit <= Data_rom[3];
+        		5: pixelbit <= Data_rom[2];
+        		6: pixelbit <= Data_rom[1];
+        		7: pixelbit <= Data_rom[0];
             default:pixelbit<=0;
         	endcase
         end
@@ -193,7 +198,7 @@ end
             letter_rgb<=0;
         else begin
         		if (pixelbit)
-        			letter_rgb <= 12'hfff;
+        			letter_rgb <=12'h0ff ;
         		else
         			letter_rgb <= 0;end
         //--------------------------------------------
