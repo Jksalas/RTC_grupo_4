@@ -98,7 +98,9 @@ if (sel_caracter==1) begin
 
 else if(sel_caracter==2)begin
 	case (adress)
-b01000010;
+		6'h00: data <= 8'b00000000;//H
+		6'h01: data <= 8'b01000010;
+		6'h02: data <= 8'b01000010;
 		6'h03: data <= 8'b01000010;
 		6'h04: data <= 8'b01000010;
 		6'h05: data <= 8'b01000010;
