@@ -18,8 +18,9 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module ControlUsuario (clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch, state, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
+module ControlUsuario (clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch,mstate, state, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
 	input clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch; //Declarion de  entradas y salidas
+	input [1:0] mstate;
 	output[3:0] state; //salida de prueba
 	output [7:0] diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw; //registros de salida
 	reg [3:0] next_state, state ; // variables de estado
@@ -42,7 +43,7 @@ parameter [3:0] A = 4'b1101;
 
 	always @(posedge clk) begin //Lógica de siguiente estado
 		case(state)
-			P0: next_state = BTNP ? RoT:P0; 
+			P0: next_state = (((mstate == 2'b10) || (mstate == 2'b11)) && (BTNP == 1'b0)) ? RoT:P0; //O tambien pueden ser las mismas senales de transicion de la Master
 			RoT: next_state = CTRL_Switch ? Trst: Rrst;
 			Rrst: next_state = Rdia;					
 			Rdia: if (BTNP)
