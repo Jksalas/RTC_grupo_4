@@ -37,7 +37,8 @@ parameter [2:0] R2 = 3'b010; //Waits tACC/tCS y Adress Detectda
 parameter [2:0] R3 = 3'b011; //Waits tADt 
 parameter [2:0] R4 = 3'b100; //Waits tW Para realizar otro proceso
 parameter [2:0] R5 = 3'b101; //tCS y Data detectada
-parameter [2:0] R6 = 3'b110; //Salida y retorno
+parameter [2:0] R6 = 3'b110; //Waits tw
+parameter [2:0] R7 = 3'b111; //Salida y retorno
 	
 	
 //Instancia el timer
@@ -50,8 +51,9 @@ Timer ReadTimer(clk, rst, tload, tsel, timer_end) ;
 			R2: {tload, tsel, next_state} = {timer_end, 2'b01, timer_end ? R3 : R2 } ;
 			R3: {tload, tsel, next_state} = {timer_end, 2'b11, timer_end ? R4 : R3 } ;
 			R4: {tload, tsel, next_state} = {timer_end, 2'b10, timer_end ? R5 : R4 } ;
-			R5: {tload, tsel, next_state} = {timer_end, 2'b00, timer_end ? R6 : R5 } ;
-			R6: {tload, tsel, next_state} = {1'b1, 2'b00, R0 } ;
+			R5: {tload, tsel, next_state} = {timer_end, 2'b11, timer_end ? R6 : R5 } ;
+			R6: {tload, tsel, next_state} = {timer_end, 2'b00, timer_end ? R7 : R6 } ;
+			R7: {tload, tsel, next_state} = {1'b1, 2'b00, R0 } ;
 			default: {tload, tsel, next_state} = {1'b0, 2'b00, R0 } ;
 		endcase
 	end
@@ -64,7 +66,8 @@ Timer ReadTimer(clk, rst, tload, tsel, timer_end) ;
 			R3: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b0, 1'b1, 1'b1, 1'b1, 1'b0, 1'b0, 1'b0, 1'b0 } ;
 			R4: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1, 1'b1 } ;
 			R5: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b0, 1'b0, 1'b1, 1'b1, 1'b0, 1'b1, 1'b1 } ;
-			R6: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0 } ;
+			R6: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1, 1'b1 } ;
+			R7: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0 } ;
 			default: {AD, CS, RD, WR, ad_mux, read_end, TS, reg_enable} = {1'b1, 1'b1, 1'b1, 1'b1, 1'b1, 1'b0, 1'b1, 1'b0 } ;
 		endcase
 	end
