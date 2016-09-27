@@ -21,7 +21,8 @@
 module DATENUMBERS(
     input okmaquina,
     input [9:0] pix_y, pix_x,
-    input wire video_on,
+    input wire video_on,programar_on,
+    input [3:0] direccion_actual_pantalla,
     input clk,reset,
     output [11:0] rgbtext,
     input [7:0] fecha_in1,fecha_in2,fecha_in3
@@ -152,7 +153,7 @@ always @(posedge clk) begin
 			lsbx_reg<=0;
 			enablereg<=0;end
 
-end
+     end
 
 
 
@@ -192,19 +193,53 @@ end
         end
 
         //del registro al bit de salida final
+        parameter progra=0,noprogra=1;
+        reg state;
 
-        always @*
-        if (reset)
+        always @(posedge clk)
+        if (reset) begin
             letter_rgb<=0;
+            state<=0;
+            end
         else begin
-        		if (pixelbit)
-        			letter_rgb <=12'h0ff ;
-        		else
-        			letter_rgb <= 0;end
+            case(state)
+                  noprogra: begin
+                      if(~programar_on)begin
+                              state<=noprogra;
+                          		if (pixelbit)
+                          			letter_rgb <=12'h0ff;
+                          		else
+                          			letter_rgb <= 0; end
+                      else if(programar_on)
+                          state<=progra;
+                  end
+                  progra: begin
+                      if(programar_on)begin
+                            state<=progra;
+                            if (pixelbit && (fecha_1|fecha_2))begin
+                                  if(direccion_actual_pantalla==3)
+                                      letter_rgb <=12'hf00;
+                                  else letter_rgb <=12'h0ff;end
+                            else if (pixelbit && (fecha_3|fecha_4))begin
+                                  if(direccion_actual_pantalla==4)
+                                      letter_rgb <=12'hf00;
+                                  else letter_rgb <=12'h0ff;end
+                            else if (pixelbit && (fecha_5|fecha_6))begin
+                                  if(direccion_actual_pantalla==5)
+                                      letter_rgb <=12'hf00;
+                                  else letter_rgb <=12'h0ff;end
+                            else
+                              letter_rgb <= 0;
+                      end
+                      else if(~programar_on)
+                            state<=noprogra;
+                  end
+            endcase
+            end
         //--------------------------------------------
           //*********logica para SALIDA, aqui se multiplexa*******
         //------------------------------------------------------
-reg [11:0] rgbtext1;
+ reg [11:0] rgbtext1;
  always@*
    		if(~video_on)
       			rgbtext1<=0;
@@ -216,3 +251,4 @@ reg [11:0] rgbtext1;
         		end
 	assign rgbtext=rgbtext1;
   endmodule
+
