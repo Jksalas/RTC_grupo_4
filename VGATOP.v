@@ -22,13 +22,14 @@
 module VGATOP(
 	input wire clk,reset,
 	input activar_alarma,
-  output wire hsync, vsync, /*video_on1,*/
+  output wire hsync, vsync,video_on1,
   output wire [11:0] rgb,
-  //output [9:0] pixX,pixY,
+  output [9:0] pixX,pixY,
   input [7:0] hour_in1,hour_in2,hour_in3,
 	input [7:0] fecha_in1,fecha_in2,fecha_in3,
-  input [7:0] timer_in1,timer_in2,timer_in3
-
+  input [7:0] timer_in1,timer_in2,timer_in3,
+	input programar_on,
+	input [3:0] direccion_actual_pantalla
 );
 
 
@@ -38,6 +39,9 @@ module VGATOP(
   wire video_on , pixel_tick;
   reg [11:0] rgb_reg;
   wire [11:0] rgb_next;
+  
+  assign pixX=pixel_x;
+  assign pixY=pixel_y;
 
   wire [11:0] rgb_ring,rgb_letra,rgb_bordes;
   reg [11:0] rgb_ring_reg;
@@ -66,7 +70,7 @@ module VGATOP(
 
 
 
-//assign video_on1=video_on;
+assign video_on1=video_on;
 wire okh,okf,okt,oksimbolo,okring;
 
 
@@ -81,7 +85,8 @@ SIMBOLOS simb(.okmaquina(oksimbolo),
 HOURNUMBERS horasvga(
  .okmaquina(okh),
  .pix_y(pixel_y), .pix_x(pixel_x),
- .video_on(video_on),
+ .video_on(video_on),.programar_on(programar_on),
+ .direccion_actual_pantalla(direccion_actual_pantalla),
  .clk(clk),.reset(reset),
  .rgbtext(rgb_numero_hora_next),
  .hour_in1(hour_in1),.hour_in2(hour_in2),.hour_in3(hour_in3)
@@ -91,7 +96,8 @@ HOURNUMBERS horasvga(
  DATENUMBERS datevg(
 	.okmaquina(okf),
   .pix_y(pixel_y), .pix_x(pixel_x),
-  .video_on(video_on),
+  .video_on(video_on),.programar_on(programar_on),
+  .direccion_actual_pantalla(direccion_actual_pantalla),
   .clk(clk),.reset(reset),
   .rgbtext(rgb_numero_fecha_next),
   .fecha_in1(fecha_in1),.fecha_in2(fecha_in2),.fecha_in3(fecha_in3)
@@ -99,9 +105,10 @@ HOURNUMBERS horasvga(
 
 
   TIMERNUMBERS cronovga(
-		.okmaquina(okt),
+	 .okmaquina(okt),
    .pix_y(pixel_y), .pix_x(pixel_x),
-   .video_on(video_on),
+   .video_on(video_on),.programar_on(programar_on),
+   .direccion_actual_pantalla(direccion_actual_pantalla),
    .clk(clk),.reset(reset),
    .rgbtext(rgb_numero_timer_next),
    .timer_in1(timer_in1),.timer_in2(timer_in2),.timer_in3(timer_in3)
