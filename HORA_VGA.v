@@ -21,7 +21,8 @@
 module HOURNUMBERS(
 		input okmaquina,
 		input [9:0] pix_y, pix_x,
-		input wire video_on,
+		input wire video_on,programar_on,
+    input [3:0] direccion_actual_pantalla,
 		input clk,reset,
 		output wire [11:0] rgbtext,
 		input [7:0] hour_in1,hour_in2,hour_in3
@@ -197,14 +198,49 @@ end
       endcase
 end
     //del registro al bit de salida final
-always @*
-if(reset)
-    letter_rgb<=0;
-else begin
-      if (pixelbit)
-        letter_rgb <= 12'h0ff;
-      else
-        letter_rgb <= 0;end
+						parameter progra=0,noprogra=1;
+		        reg state;
+
+		        always @(posedge clk)
+		        if (reset) begin
+		            letter_rgb<=0;
+		            state<=0;
+		            end
+		        else begin
+		            case(state)
+		                  noprogra: begin
+		                      if(~programar_on)begin
+		                              state<=noprogra;
+		                          		if (pixelbit)
+		                          			letter_rgb <=12'h0ff;
+		                          		else
+		                          			letter_rgb <= 0; end
+		                      else if(programar_on)
+		                          state<=progra;
+		                  end
+		                  progra: begin
+		                      if(programar_on)begin
+		                            state<=progra;
+		                            if (pixelbit && (hora_1|hora_2))begin
+		                                  if(direccion_actual_pantalla==0)
+		                                      letter_rgb <=12'hf00;
+		                                  else letter_rgb <=12'h0ff;end
+		                            else if (pixelbit && (hora_3|hora_4))begin
+		                                  if(direccion_actual_pantalla==1)
+		                                      letter_rgb <=12'hf00;
+		                                  else letter_rgb <=12'h0ff;end
+		                            else if (pixelbit && (hora_5|hora_6))begin
+		                                  if(direccion_actual_pantalla==2)
+		                                      letter_rgb <=12'hf00;
+		                                  else letter_rgb <=12'h0ff;end
+		                            else
+		                              letter_rgb <= 0;
+		                      end
+		                      else if(~programar_on)
+		                            state<=noprogra;
+		                  end
+		            endcase
+		            end
     //--------------------------------------------
       //*********logica para SALIDA, aqui se multiplexa*******
     //------------------------------------------------------
