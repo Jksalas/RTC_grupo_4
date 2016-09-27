@@ -22,7 +22,8 @@
 module TIMERNUMBERS(
       input okmaquina,
       input [9:0] pix_y, pix_x,
-      input wire video_on,
+      input wire video_on,programar_on,
+      input [3:0] direccion_actual_pantalla,
       input clk,reset,
       output [11:0] rgbtext,
       input [7:0] timer_in1,timer_in2,timer_in3
@@ -173,14 +174,49 @@ end
             endcase
           end
           //del registro al bit de salida final
-          always @*
-          if(reset)
+          parameter progra=0,noprogra=1;
+          reg state;
+
+          always @(posedge clk)
+          if (reset) begin
               letter_rgb<=0;
+              state<=0;
+              end
           else begin
-              if (pixelbit)
-                letter_rgb <= 12'h0ff;
-              else
-                letter_rgb <= 0;end
+              case(state)
+                    noprogra: begin
+                        if(~programar_on)begin
+                                state<=noprogra;
+                                if (pixelbit)
+                                  letter_rgb <=12'h0ff;
+                                else
+                                  letter_rgb <= 0; end
+                        else if(programar_on)
+                            state<=progra;
+                    end
+                    progra: begin
+                        if(programar_on)begin
+                              state<=progra;
+                              if (pixelbit && (timer_1|timer_2))begin
+                                    if(direccion_actual_pantalla==6)
+                                        letter_rgb <=12'hf00;
+                                    else letter_rgb <=12'h0ff;end
+                              else if (pixelbit && (timer_3|timer_4))begin
+                                    if(direccion_actual_pantalla==7)
+                                        letter_rgb <=12'hf00;
+                                    else letter_rgb <=12'h0ff;end
+                              else if (pixelbit && (timer_5|timer_6))begin
+                                    if(direccion_actual_pantalla==8)
+                                        letter_rgb <=12'hf00;
+                                    else letter_rgb <=12'h0ff;end
+                              else
+                                letter_rgb <= 0;
+                        end
+                        else if(~programar_on)
+                              state<=noprogra;
+                    end
+              endcase
+              end
           //--------------------------------------------
             //*********logica para SALIDA, aqui se multiplexa*******
           //------------------------------------------------------
@@ -197,4 +233,3 @@ reg [11:0] rgbtext1;
               end
 assign rgbtext=rgbtext1;
 endmodule
-
