@@ -135,22 +135,22 @@ end
       endcase
       end
     //del registro al bit de salida final
-    always @*
+    always @(posedge clk)
     if(reset)
-        letter_rgb<=0;
+        letter_rgb<=12'hfff;
     else begin
         if (pixelbit)
           letter_rgb <= 12'h0ff;
         else
-          letter_rgb <= 0;end
+          letter_rgb <= 12'h000;end
     //--------------------------------------------
       //*********logica para SALIDA, aqui se multiplexa*******
     //------------------------------------------------------
 
 reg [11:0]rgbtext1;
-always@*
+always@(posedge clk)
   if(~video_on)
-        rgbtext1<=0;
+        rgbtext1<=12'hfff;
    else begin
           if (barrafecha | ruedaon1)
               rgbtext1 <= letter_rgb;
