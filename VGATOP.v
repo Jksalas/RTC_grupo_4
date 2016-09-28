@@ -22,11 +22,11 @@
 module VGATOP(
 	input wire clk,reset,
 	input activar_alarma,
-  output wire hsync, vsync,
-//	output video_on1,
-  output wire [11:0] rgb,
-  //output [9:0] pixX,pixY,
-  //input [7:0] hour_in1,hour_in2,hour_in3,
+  	output wire hsync, vsync,
+	//	output video_on1,
+  	output wire [11:0] rgb,
+  	//output [9:0] pixX,pixY,
+ 	//input [7:0] hour_in1,hour_in2,hour_in3,
 	input [7:0] hour_in1,
 	input programar_on,
 	input [3:0] direccion_actual_pantalla
