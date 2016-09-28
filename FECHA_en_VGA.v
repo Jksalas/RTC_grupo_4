@@ -198,7 +198,7 @@ always @(posedge clk) begin
 
         always @(posedge clk)
         if (reset) begin
-            letter_rgb<=0;
+            letter_rgb<=12'hfff;
             state<=0;
             end
         else begin
@@ -251,4 +251,3 @@ always @(posedge clk) begin
         		end
 	assign rgbtext=rgbtext1;
   endmodule
-
