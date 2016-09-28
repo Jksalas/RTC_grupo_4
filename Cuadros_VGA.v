@@ -19,636 +19,115 @@
 //CREADOR: JOAO SALAS RAMIREZ
 //
 //////////////////////////////////////////////////////////////////////////////////
-module SQUARE(
-	input [9:0] pix_y, pix_x,
-	 input wire video_on,
-	 input reset,clk,
-	 output  [11:0] rgbtext
-
-);
-	 //*********************************************************
-	 //SECCION GENERADORA DE CUADROS EN LA PANTALLA
-
-	 localparam MAX_Y= 480;
-	 localparam MAX_X= 640;
-	wire [11:0] color_rgb; //output de salida
-		//tamanos de lineas
-//CAJAS GRANDES CREACION, LAS QUE ENCIERRAN,
-//comienza la cajote de la hora
-//vertical1
-
-	localparam grande1v_left=169;
-	localparam grande1v_right=173;
-	localparam grande1v_y_t = 40;
-	localparam grande1v_y_b = 150;
-	wire  grande1v_on;
-	assign grande1v_on = (grande1v_left<=pix_x) && (pix_x<=grande1v_right) &&
-	(grande1v_y_t<=pix_y) && (pix_y<=grande1v_y_b);
-//vertial2
-	localparam grande2v_left=530;
-	localparam grande2v_right=534;
-	localparam grande2v_y_t = 40;
-	localparam grande2v_y_b = 150;
-	wire  grande2v_on;
-	assign grande2v_on = (grande2v_left<=pix_x) && (pix_x<=grande2v_right) &&
-	(grande2v_y_t<=pix_y) && (pix_y<=grande2v_y_b);
-//horizontal1
-
-	localparam grande1h_left=174;
-	localparam grande1h_right=529;
-	localparam grande1h_y_t = 40;
-	localparam grande1h_y_b = 44;
-	wire  grande1h_on;
-	assign grande1h_on = (grande1h_left<=pix_x) && (pix_x<=grande1h_right) &&
-	(grande1h_y_t<=pix_y) && (pix_y<=grande1h_y_b);
-//horizontal2
-
-	localparam grande2h_left=174;
-	localparam grande2h_right=529;
-	localparam grande2h_y_t = 146;
-	localparam grande2h_y_b = 150;
-	wire  grande2h_on;
-	assign grande2h_on = (grande2h_left<=pix_x) && (pix_x<=grande2h_right) &&
-	(grande2h_y_t<=pix_y) && (pix_y<=grande2h_y_b);
-
-//----------------------------------------------------------------------------
-//sigue la caja de la fecha
-
-//vertical1
-
-	localparam grandef1v_left=140;
-	localparam grandef1v_right=144;
-	localparam grandef1v_y_t = 175;
-	localparam grandef1v_y_b = 275;
-	wire  grandef1v_on;
-	assign grandef1v_on = (grandef1v_left<=pix_x) && (pix_x<=grandef1v_right) &&
-	(grandef1v_y_t<=pix_y) && (pix_y<=grandef1v_y_b);
-//vertial2
-
-	localparam grandef2v_left=564;
-	localparam grandef2v_right=568;
-	localparam grandef2v_y_t = 175;
-	localparam grandef2v_y_b = 275;
-	wire  grandef2v_on;
-	assign grandef2v_on = (grandef2v_left<=pix_x) && (pix_x<=grandef2v_right) &&
-	(grandef2v_y_t<=pix_y) && (pix_y<=grandef2v_y_b);
-//horizontal1
-
-	localparam grandef1h_left=145;
-	localparam grandef1h_right=563;
-	localparam grandef1h_y_t = 175;
-	localparam grandef1h_y_b = 179;
-	wire  grandef1h_on;
-	assign grandef1h_on = (grandef1h_left<=pix_x) && (pix_x<=grandef1h_right) &&
-	(grandef1h_y_t<=pix_y) && (pix_y<=grandef1h_y_b);
-//horizontal2
-
-	localparam grandef2h_left=145;
-	localparam grandef2h_right=563;
-	localparam grandef2h_y_t = 271;
-	localparam grandef2h_y_b = 275;
-	wire  grandef2h_on;
-	assign grandef2h_on = (grandef2h_left<=pix_x) && (pix_x<=grandef2h_right) &&
-	(grandef2h_y_t<=pix_y) && (pix_y<=grandef2h_y_b);
-//---------------------------------------------------------------------
-
-//sigue la caja del cronometro
-//vertical1
-
-	localparam grandec1v_left=169;
-	localparam grandec1v_right=173;
-	localparam grandec1v_y_t = 298;
-	localparam grandec1v_y_b = 410;
-	wire  grandec1v_on;
-	assign grandec1v_on = (grandec1v_left<=pix_x) && (pix_x<=grandec1v_right) &&
-	(grandec1v_y_t<=pix_y) && (pix_y<=grandec1v_y_b);
-//vertial2
-
-	localparam grandec2v_left=530;
-	localparam grandec2v_right=534;
-	localparam grandec2v_y_t = 298;
-	localparam grandec2v_y_b = 410;
-	wire  grandec2v_on;
-	assign grandec2v_on = (grandec2v_left<=pix_x) && (pix_x<=grandec2v_right) &&
-	(grandec2v_y_t<=pix_y) && (pix_y<=grandec2v_y_b);
-//horizontal1
-
-	localparam grandec1h_left=174;
-	localparam grandec1h_right=529;
-	localparam grandec1h_y_t = 298;
-	localparam grandec1h_y_b = 302;
-	wire  grandec1h_on;
-	assign grandec1h_on = (grandec1h_left<=pix_x) && (pix_x<=grandec1h_right) &&
-	(grandec1h_y_t<=pix_y) && (pix_y<=grandec1h_y_b);
-//horizontal2
-
-	localparam grandec2h_left=174;
-	localparam grandec2h_right=529;
-	localparam grandec2h_y_t = 406;
-	localparam grandec2h_y_b = 410;
-	wire  grandec2h_on;
-	assign grandec2h_on = (grandec2h_left<=pix_x) && (pix_x<=grandec2h_right) &&
-	(grandec2h_y_t<=pix_y) && (pix_y<=grandec2h_y_b);
-
-
-//---------------------------------------------------------------------------
-//**********************************************************************
-
-//recuadros dentro de la caja del reloj
-
-//cajas para las horas
-//primer caja
-//vertical1
-
-	localparam media1v_left=179;
-	localparam media1v_right=182;
-	localparam media1v_y_t = 54;
-	localparam media1v_y_b = 137;
-	wire  media1v_on;
-	assign media1v_on = (media1v_left<=pix_x) && (pix_x<=media1v_right) &&
-	(media1v_y_t<=pix_y) && (pix_y<=media1v_y_b);
-//vertial2
-
-	localparam media2v_left=265;
-	localparam media2v_right=268;
-	localparam media2v_y_t = 54;
-	localparam media2v_y_b = 137;
-	wire  media2v_on;
-	assign media2v_on = (media2v_left<=pix_x) && (pix_x<=media2v_right) &&
-	(media2v_y_t<=pix_y) && (pix_y<=media2v_y_b);
-//horizontal1
-	localparam media1h_left=183;
-	localparam media1h_right=264;
-	localparam media1h_y_t = 54;
-	localparam media1h_y_b = 57;
-	wire  media1h_on;
-	assign media1h_on = (media1h_left<=pix_x) && (pix_x<=media1h_right) &&
-	(media1h_y_t<=pix_y) && (pix_y<=media1h_y_b);
-//horizontal2
-	localparam media2h_left=183;
-	localparam media2h_right=264;
-	localparam media2h_y_t = 134;
-	localparam media2h_y_b = 137;
-	wire  media2h_on;
-	assign media2h_on = (media2h_left<=pix_x) && (pix_x<=media2h_right) &&
-	(media2h_y_t<=pix_y) && (pix_y<=media2h_y_b);
-//------------------------------------------
-//segunda caja
-//------------------------------------------
-
-//vertical1
-
-	localparam media1v2_left=307;
-	localparam media1v2_right=310;
-	localparam media1v2_y_t = 54; //listos
-	localparam media1v2_y_b = 137;
-	wire  media1v2_on;
-	assign media1v2_on = (media1v2_left<=pix_x) && (pix_x<=media1v2_right) &&
-	(media1v2_y_t<=pix_y) && (pix_y<=media1v2_y_b);
-//vertial2
-
-	localparam media2v2_left=393;
-	localparam media2v2_right=396;
-	localparam media2v2_y_t = 54;
-	localparam media2v2_y_b = 137;
-	wire  media2v2_on;
-	assign media2v2_on = (media2v2_left<=pix_x) && (pix_x<=media2v2_right) &&
-	(media2v2_y_t<=pix_y) && (pix_y<=media2v2_y_b);
-//horizontal1
-	localparam media1h2_left=307;
-	localparam media1h2_right=392;
-	localparam media1h2_y_t = 54;
-	localparam media1h2_y_b = 57;
-	wire  media1h2_on;
-	assign media1h2_on = (media1h2_left<=pix_x) && (pix_x<=media1h2_right) &&
-	(media1h2_y_t<=pix_y) && (pix_y<=media1h2_y_b);
-//horizontal2
-	localparam media2h2_left=307;
-	localparam media2h2_right=392;
-	localparam media2h2_y_t = 134; //ready
-	localparam media2h2_y_b = 137;
-	wire  media2h2_on;
-	assign media2h2_on = (media2h2_left<=pix_x) && (pix_x<=media2h2_right) &&
-	(media2h2_y_t<=pix_y) && (pix_y<=media2h2_y_b);
-
-//tercera caja
-//------------------------------------------
-
-//vertical1
-
-	localparam media1v3_left=435;
-	localparam media1v3_right=438;
-	localparam media1v3_y_t = 54; //ready
-	localparam media1v3_y_b = 137;
-	wire  media1v3_on;
-	assign media1v3_on = (media1v3_left<=pix_x) && (pix_x<=media1v3_right) &&
-	(media1v3_y_t<=pix_y) && (pix_y<=media1v3_y_b);
-//vertial2
-
-	localparam media2v3_left=521;
-	localparam media2v3_right=523;
-	localparam media2v3_y_t = 54;
-	localparam media2v3_y_b = 137;
-	wire  media2v3_on;
-	assign media2v3_on = (media2v3_left<=pix_x) && (pix_x<=media2v3_right) &&
-	(media2v3_y_t<=pix_y) && (pix_y<=media2v3_y_b);
-//horizontal1
-	localparam media1h3_left=436;
-	localparam media1h3_right=520;
-	localparam media1h3_y_t = 54;
-	localparam media1h3_y_b = 57;
-	wire  media1h3_on;
-	assign media1h3_on = (media1h3_left<=pix_x) && (pix_x<=media1h3_right) &&
-	(media1h3_y_t<=pix_y) && (pix_y<=media1h3_y_b);
-//horizontal2
-	localparam media2h3_left=436;
-	localparam media2h3_right=520;
-	localparam media2h3_y_t = 134; //ready
-	localparam media2h3_y_b = 137;
-	wire  media2h3_on;
-	assign media2h3_on = (media2h3_left<=pix_x) && (pix_x<=media2h3_right) &&
-	(media2h3_y_t<=pix_y) && (pix_y<=media2h3_y_b);
-//------------------------------------------------------------------------------
-
-//********************************************
-//CREACION DE CAJAS QUE VAN DENTRO DE LA CAJA DE FECHA las que encierran a los numeros
-//-----------------------
-//primer caja
-//vertical1
-
-	localparam fecha1v_left=150;
-	localparam fecha1v_right=153;
-	localparam fecha1v_y_t = 182;
-	localparam fecha1v_y_b = 265;
-	wire  fecha1v_on;
-	assign fecha1v_on = (fecha1v_left<=pix_x) && (pix_x<=fecha1v_right) &&
-	(fecha1v_y_t<=pix_y) && (pix_y<=fecha1v_y_b);
-//vertial2
-
-	localparam fecha2v_left=232;
-	localparam fecha2v_right=235;
-	localparam fecha2v_y_t = 182; //listo
-	localparam fecha2v_y_b = 265;
-	wire  fecha2v_on;
-	assign fecha2v_on = (fecha2v_left<=pix_x) && (pix_x<=fecha2v_right) &&
-	(fecha2v_y_t<=pix_y) && (pix_y<=fecha2v_y_b);
-//horizontal1
-	localparam fecha1h_left=154;
-	localparam fecha1h_right=231;
-	localparam fecha1h_y_t = 182; //listo
-	localparam fecha1h_y_b = 185;
-	wire  fecha1h_on;
-	assign fecha1h_on = (fecha1h_left<=pix_x) && (pix_x<=fecha1h_right) &&
-	(fecha1h_y_t<=pix_y) && (pix_y<=fecha1h_y_b);
-//horizontal2
-	localparam fecha2h_left=154;
-	localparam fecha2h_right=231;
-	localparam fecha2h_y_t = 262; //ok
-	localparam fecha2h_y_b = 265;
-	wire  fecha2h_on;
-	assign fecha2h_on = (fecha2h_left<=pix_x) && (pix_x<=fecha2h_right) &&
-	(fecha2h_y_t<=pix_y) && (pix_y<=fecha2h_y_b);
-
-//segunda caja en la fecha
-
-//vertical1
-
-	localparam fecha1v2_left=307;
-	localparam fecha1v2_right=310;
-	localparam fecha1v2_y_t = 182;  //listo
-	localparam fecha1v2_y_b = 265;
-	wire  fecha1v2_on;
-	assign fecha1v2_on = (fecha1v2_left<=pix_x) && (pix_x<=fecha1v2_right) &&
-	(fecha1v2_y_t<=pix_y) && (pix_y<=fecha1v2_y_b);
-//vertial2
-
-	localparam fecha2v2_left=389;
-	localparam fecha2v2_right=392;
-	localparam fecha2v2_y_t = 182;
-	localparam fecha2v2_y_b = 265;
-	wire  fecha2v2_on;
-	assign fecha2v2_on = (fecha2v2_left<=pix_x) && (pix_x<=fecha2v2_right) &&
-	(fecha2v2_y_t<=pix_y) && (pix_y<=fecha2v2_y_b);
-//horizontal1
-	localparam fecha1h2_left=311;
-	localparam fecha1h2_right=388;
-	localparam fecha1h2_y_t = 182;//ok
-	localparam fecha1h2_y_b = 185;
-	wire  fecha1h2_on;
-	assign fecha1h2_on = (fecha1h2_left<=pix_x) && (pix_x<=fecha1h2_right) &&
-	(fecha1h2_y_t<=pix_y) && (pix_y<=fecha1h2_y_b);
-//horizontal2
-	localparam fecha2h2_left=311;
-	localparam fecha2h2_right=388;
-	localparam fecha2h2_y_t = 262;//ok
-	localparam fecha2h2_y_b = 265;
-	wire  fecha2h2_on;
-	assign fecha2h2_on = (fecha2h2_left<=pix_x) && (pix_x<=fecha2h2_right) &&
-	(fecha2h2_y_t<=pix_y) && (pix_y<=fecha2h2_y_b);
-
-//tercera caja dentro de fecha
-
-//vertical1
-
-	localparam fecha1v3_left=469;
-	localparam fecha1v3_right=472;
-	localparam fecha1v3_y_t = 182; //listo
-	localparam fecha1v3_y_b = 265;
-	wire  fecha1v3_on;
-	assign fecha1v3_on = (fecha1v3_left<=pix_x) && (pix_x<=fecha1v3_right) &&
-	(fecha1v3_y_t<=pix_y) && (pix_y<=fecha1v3_y_b);
-//vertial2
-
-	localparam fecha2v3_left=552;
-	localparam fecha2v3_right=555;
-	localparam fecha2v3_y_t = 182;
-	localparam fecha2v3_y_b = 265;
-	wire  fecha2v3_on;
-	assign fecha2v3_on = (fecha2v3_left<=pix_x) && (pix_x<=fecha2v3_right) &&
-	(fecha2v3_y_t<=pix_y) && (pix_y<=fecha2v3_y_b);
-//horizontal1
-	localparam fecha1h3_left=473;
-	localparam fecha1h3_right=551;
-	localparam fecha1h3_y_t = 182;//ok
-	localparam fecha1h3_y_b = 185;
-	wire  fecha1h3_on;
-	assign fecha1h3_on = (fecha1h3_left<=pix_x) && (pix_x<=fecha1h3_right) &&
-	(fecha1h3_y_t<=pix_y) && (pix_y<=fecha1h3_y_b);
-//horizontal2
-	localparam fecha2h3_left=473;
-	localparam fecha2h3_right=551;
-	localparam fecha2h3_y_t = 262;//ok
-	localparam fecha2h3_y_b = 265;
-	wire  fecha2h3_on;
-	assign fecha2h3_on = (fecha2h3_left<=pix_x) && (pix_x<=fecha2h3_right) &&
-	(fecha2h3_y_t<=pix_y) && (pix_y<=fecha2h3_y_b);
-
-//---------------------------------------------------------------------------
-//-----------------------------------------------------------------
-//***************************************************
-//---------------------------------------------------------------
-//CAJAS QUE VAN DENTRO DEL CRONOMETRO
-
-
-//vertical1
-
-	localparam crono1v_left=179;
-	localparam crono1v_right=182;
-	localparam crono1v_y_t = 310;
-	localparam crono1v_y_b = 393;
-	wire  crono1v_on;
-	assign crono1v_on = (crono1v_left<=pix_x) && (pix_x<=crono1v_right) &&
-	(crono1v_y_t<=pix_y) && (pix_y<=crono1v_y_b);
-//vertial2
-
-	localparam crono2v_left=265;
-	localparam crono2v_right=268;
-	localparam crono2v_y_t = 310;
-	localparam crono2v_y_b = 393;
-	wire  crono2v_on;
-	assign crono2v_on = (crono2v_left<=pix_x) && (pix_x<=crono2v_right) &&
-	(crono2v_y_t<=pix_y) && (pix_y<=crono2v_y_b);
-//horizontal1
-	localparam crono1h_left=183;
-	localparam crono1h_right=264;
-	localparam crono1h_y_t = 310;
-	localparam crono1h_y_b = 313;
-	wire  crono1h_on;
-	assign crono1h_on = (crono1h_left<=pix_x) && (pix_x<=crono1h_right) &&
-	(crono1h_y_t<=pix_y) && (pix_y<=crono1h_y_b);
-//horizontal2
-	localparam crono2h_left=183;
-	localparam crono2h_right=264;
-	localparam crono2h_y_t = 390;
-	localparam crono2h_y_b = 393;
-	wire  crono2h_on;
-	assign crono2h_on = (crono2h_left<=pix_x) && (pix_x<=crono2h_right) &&
-	(crono2h_y_t<=pix_y) && (pix_y<=crono2h_y_b);
-
-//segunda caja crono
-//si algo comienza a dar problemas es porque aqui el pixel 307 coincide en la cajas, igual pasa en las cajas de la hora
-//vertical1
-
-	localparam crono1v2_left=307;
-	localparam crono1v2_right=310;
-	localparam crono1v2_y_t = 310;
-	localparam crono1v2_y_b = 393;
-	wire  crono1v2_on;
-	assign crono1v2_on = (crono1v2_left<=pix_x) && (pix_x<=crono1v2_right) &&
-	(crono1v2_y_t<=pix_y) && (pix_y<=crono1v2_y_b);
-//vertial2
-
-	localparam crono2v2_left=393;
-	localparam crono2v2_right=396;
-	localparam crono2v2_y_t = 310;
-	localparam crono2v2_y_b = 393;
-	wire  crono2v2_on;
-	assign crono2v2_on = (crono2v2_left<=pix_x) && (pix_x<=crono2v2_right) &&
-	(crono2v2_y_t<=pix_y) && (pix_y<=crono2v2_y_b);
-//horizontal1
-	localparam crono1h2_left=307;
-	localparam crono1h2_right=392;
-	localparam crono1h2_y_t = 310;
-	localparam crono1h2_y_b = 313;
-	wire  crono1h2_on;
-	assign crono1h2_on = (crono1h2_left<=pix_x) && (pix_x<=crono1h2_right) &&
-	(crono1h2_y_t<=pix_y) && (pix_y<=crono1h2_y_b);
-//horizontal2
-	localparam crono2h2_left=307;
-	localparam crono2h2_right=392;
-	localparam crono2h2_y_t = 390;
-	localparam crono2h2_y_b = 393;
-	wire  crono2h2_on;
-	assign crono2h2_on = (crono2h2_left<=pix_x) && (pix_x<=crono2h2_right) &&
-	(crono2h2_y_t<=pix_y) && (pix_y<=crono2h2_y_b);
-
-//tercera caja crono
-
-//vertical1
-
-	localparam crono1v3_left=435;
-	localparam crono1v3_right=438;
-	localparam crono1v3_y_t = 310;
-	localparam crono1v3_y_b = 393;
-	wire  crono1v3_on;
-	assign crono1v3_on = (crono1v3_left<=pix_x) && (pix_x<=crono1v3_right) &&
-	(crono1v3_y_t<=pix_y) && (pix_y<=crono1v3_y_b);
-//vertial2
-
-	localparam crono2v3_left=521;
-	localparam crono2v3_right=523;
-	localparam crono2v3_y_t = 310;
-	localparam crono2v3_y_b = 393;
-	wire  crono2v3_on;
-	assign crono2v3_on = (crono2v3_left<=pix_x) && (pix_x<=crono2v3_right) &&
-	(crono2v3_y_t<=pix_y) && (pix_y<=crono2v3_y_b);
-//horizontal1
-	localparam crono1h3_left=436;//ok
-	localparam crono1h3_right=520;
-	localparam crono1h3_y_t = 310;
-	localparam crono1h3_y_b = 313;
-	wire  crono1h3_on;
-	assign crono1h3_on = (crono1h3_left<=pix_x) && (pix_x<=crono1h3_right) &&
-	(crono1h3_y_t<=pix_y) && (pix_y<=crono1h3_y_b);
-//horizontal2
-	localparam crono2h3_left=436;
-	localparam crono2h3_right=520;
-	localparam crono2h3_y_t = 390;
-	localparam crono2h3_y_b = 393;
-	wire  crono2h3_on;
-	assign crono2h3_on = (crono2h3_left<=pix_x) && (pix_x<=crono2h3_right) &&
-	(crono2h3_y_t<=pix_y) && (pix_y<=crono2h3_y_b);
-
-
-//-----------------------------------------------------------------------
-//CAJAS QUE ENCERRAN EL RTC
-//*************************************************************************
-//vertical1
-
-	localparam B1v2_left=28;
-	localparam B1v2_right=30;
-	localparam B1v2_y_t = 30;
-	localparam B1v2_y_b = 157;
-	wire  B1v2_on;
-	assign B1v2_on = (B1v2_left<=pix_x) && (pix_x<=B1v2_right) &&
-	(B1v2_y_t<=pix_y) && (pix_y<=B1v2_y_b);
-//vertial2
-
-	localparam B2v2_left=548;
-	localparam B2v2_right=550;
-	localparam B2v2_y_t = 30;
-	localparam B2v2_y_b = 157;
-	wire  B2v2_on;
-	assign B2v2_on = (B2v2_left<=pix_x) && (pix_x<=B2v2_right) &&
-	(B2v2_y_t<=pix_y) && (pix_y<=B2v2_y_b);
-//horizontal1
-	localparam B1h2_left=31;
-	localparam B1h2_right=547;
-	localparam B1h2_y_t = 30;
-	localparam B1h2_y_b = 32;
-	wire  B1h2_on;
-	assign B1h2_on = (B1h2_left<=pix_x) && (pix_x<=B1h2_right) &&
-	(B1h2_y_t<=pix_y) && (pix_y<=B1h2_y_b);
-//horizontal2
-	localparam B2h2_left=31;
-	localparam B2h2_right=547;
-	localparam B2h2_y_t = 155;
-	localparam B2h2_y_b = 157;
-	wire  B2h2_on;
-	assign B2h2_on = (B2h2_left<=pix_x) && (pix_x<=B2h2_right) &&
-	(B2h2_y_t<=pix_y) && (pix_y<=B2h2_y_b);
-
-
-//**********************************************************************
-//SEGUNDO BORDE
-//*************************************************************************
-//vertical1
-	localparam B1v2b_left=28;
-	localparam B1v2b_right=30;
-	localparam B1v2b_y_t = 165;
-	localparam B1v2b_y_b = 285;
-	wire  B1v2b_on;
-	assign B1v2b_on = (B1v2b_left<=pix_x) && (pix_x<=B1v2b_right) &&
-	(B1v2b_y_t<=pix_y) && (pix_y<=B1v2b_y_b);
-//vertial2
-
-	localparam B2v2b_left=578;
-	localparam B2v2b_right=580;
-	localparam B2v2b_y_t = 165;
-	localparam B2v2b_y_b = 285;
-	wire  B2v2b_on;
-	assign B2v2b_on = (B2v2b_left<=pix_x) && (pix_x<=B2v2b_right) &&
-	(B2v2b_y_t<=pix_y) && (pix_y<=B2v2b_y_b);
-//horizontal1
-	localparam B1h2b_left=31;
-	localparam B1h2b_right=577;
-	localparam B1h2b_y_t = 165;
-	localparam B1h2b_y_b = 167;
-	wire  B1h2b_on;
-	assign B1h2b_on = (B1h2b_left<=pix_x) && (pix_x<=B1h2b_right) &&
-	(B1h2b_y_t<=pix_y) && (pix_y<=B1h2b_y_b);
-//horizontal2
-	localparam B2h2b_left=31;
-	localparam B2h2b_right=577;
-	localparam B2h2b_y_t = 283;
-	localparam B2h2b_y_b = 285;
-	wire  B2h2b_on;
-	assign B2h2b_on = (B2h2b_left<=pix_x) && (pix_x<=B2h2b_right) &&
-	(B2h2b_y_t<=pix_y) && (pix_y<=B2h2b_y_b);
-
-//*********************************************************
-//tercer borde
-
-//vertical1
-	localparam B1v2c_left=28;
-	localparam B1v2c_right=30;
-	localparam B1v2c_y_t = 290;
-	localparam B1v2c_y_b = 420;
-	wire  B1v2c_on;
-	assign B1v2c_on = (B1v2c_left<=pix_x) && (pix_x<=B1v2c_right) &&
-	(B1v2c_y_t<=pix_y) && (pix_y<=B1v2c_y_b);
-//vertial2
-
-	localparam B2v2c_left=545;
-	localparam B2v2c_right=547;
-	localparam B2v2c_y_t = 290;
-	localparam B2v2c_y_b = 420;
-	wire  B2v2c_on;
-	assign B2v2c_on = (B2v2c_left<=pix_x) && (pix_x<=B2v2c_right) &&
-	(B2v2c_y_t<=pix_y) && (pix_y<=B2v2c_y_b);
-//horizontal1
-	localparam B1h2c_left=31;
-	localparam B1h2c_right=544;
-	localparam B1h2c_y_t = 290;
-	localparam B1h2c_y_b = 292;
-	wire  B1h2c_on;
-	assign B1h2c_on = (B1h2c_left<=pix_x) && (pix_x<=B1h2c_right) &&
-	(B1h2c_y_t<=pix_y) && (pix_y<=B1h2c_y_b);
-//horizontal2
-	localparam B2h2c_left=31;
-	localparam B2h2c_right=544;
-	localparam B2h2c_y_t = 418;
-	localparam B2h2c_y_b = 420;
-	wire  B2h2c_on;
-	assign B2h2c_on = (B2h2c_left<=pix_x) && (pix_x<=B2h2c_right) &&
-	(B2h2c_y_t<=pix_y) && (pix_y<=B2h2c_y_b);
-//**********************************************************************
-//------------------------------------------------------------------
-
-wire [11:0] color;
-assign color=12'h009;
-
-reg [11:0] rgbtext1;
-always@*
-if(reset)
-		rgbtext1<=0;
-else begin
-	case(video_on)
-	0: begin
-			rgbtext1<=0;
+module SINCRONIZADOR(
+	input wire clk, reset, //entradas del sincronizador
+	output wire hsync, vsync, video_activado, instante_pulso, //salidas del sincronizador
+	output wire [9:0] pixel_x, pixel_y //senales de coordenadas
+   );
+	//parametros de sincronizacion horizontal
+	localparam Horizontal_Display = 640;
+	localparam Horizontal_front_border=48; //front porch
+	localparam Horizontal_back_border=16; //back porch
+	localparam Hor_retrace=96; //pulso bajo
+	//parametros de sincronizacion vertical
+	localparam Ver_Display = 480;
+	localparam Ver_left_border= 10; //front porch
+	localparam Ver_right_border=30; //back porch
+	localparam Ver_retrace= 2; //pulso bajo
+
+	reg modo2_reg; //contadores necesarios para realizar la 'division' de frecuencia, habilitadores de conteo
+	wire modo2_siguiente;
+
+
+
+	reg [9:0] h_contador_reg, h_contador_siguiente; //contador horizontal
+	reg [9:0] v_contador_reg, v_contador_siguiente;	//contador vertical
+	//buffers para evitar algun tipo de glitch a la salida
+	reg v_sync_reg,h_sync_reg;
+	wire v_sync_next, h_sync_next;
+
+	wire h_final,v_final,pixel_tick; //senales para estado del recorrido
+
+
+	//logica secuencial
+	always @(posedge clk, posedge reset)  //en los flancos positivos de reloj y reset
+		if (reset)
+			begin
+			modo2_reg <=1'b0; //todas la senales en 0 al darse un reset
+			v_contador_reg <= 0;
+			h_contador_reg <= 0;
+			v_sync_reg <= 1'b0;
+			h_sync_reg <= 1'b0;
+			end
+		else
+			begin //asignaciones de los valores anteriores a la senales siguientes de los registros cada flanco positivo de reloj
+			modo2_reg <= modo2_siguiente;
+			v_contador_reg <= v_contador_siguiente;
+			h_contador_reg <= h_contador_siguiente;
+			v_sync_reg <= v_sync_next ;
+			h_sync_reg <= h_sync_next;
 			end
 
-	1: begin
-				if (grandec2h_on | grandec1h_on | grandec1v_on |grandec2v_on | grandef2h_on | grandef1h_on | grandef2v_on | grandef1v_on | grande2h_on | grande1h_on | grande2v_on | grande1v_on)
-					rgbtext1<=12'h00f;
-				else if (media1v_on | media2v_on | media1h_on | media2h_on |media1v2_on | media2v2_on|media1h2_on |media2h2_on |media1v3_on | media2v3_on|media1h3_on |media2h3_on)
-					rgbtext1<=color;
-				else if(fecha1v_on | fecha2v_on | fecha1h_on | fecha2h_on |fecha1v2_on | fecha2v2_on | fecha1h2_on | fecha2h2_on |fecha1v3_on | fecha2v3_on | fecha1h3_on | fecha2h3_on)
-					rgbtext1<=color;
-				else if(crono1v_on | crono2v_on | crono1h_on | crono2h_on |crono1v2_on | crono2v2_on | crono1h2_on | crono2h2_on |crono1v3_on | crono2v3_on | crono1h3_on | crono2h3_on)
-					rgbtext1<=color;
-				else if(B2h2_on | B1h2_on |B1v2_on | B2v2_on|B2h2b_on | B1h2b_on |B1v2b_on | B2v2b_on|B2h2c_on | B1h2c_on |B1v2c_on | B2v2c_on)
-						rgbtext1<=12'h049;
-				else
-				rgbtext1<=0;
+	reg [1:0]modo4reg;	//contadores necesarios para realizar la 'division' de frecuencia a 25MHz, habilitadores de conteo
+	wire [1:0]mode4next;
+
+	always @(posedge clk,posedge reset)
+			if(reset)
+				modo4reg <= 0;
+			else
+				modo4reg <= modo4reg + 1;
+
+	assign modo2_siguiente=~modo2_reg;
+	wire enable;
+	wire enable2;
+	wire enable2tick;
+
+	assign enable2tick=enable2;
+	assign pixel_tick=enable;
+	assign enable=modo4reg[1];
+	assign enable2=modo4reg[0];
 
 
-	   end
-	default:
-		rgbtext1<=12'hfff;
-	endcase
-end
 
-assign rgbtext=rgbtext1;
+	assign h_final=(h_contador_reg==(Hor_retrace+Horizontal_Display+Horizontal_front_border+Horizontal_back_border-1));
+	assign v_final=(v_contador_reg==(Ver_left_border+Ver_right_border+Ver_retrace+Ver_Display-1));
+
+//logica para generar los conteos
+	always@* //horizontaless
+		if (pixel_tick & enable2tick) //cuenta solo en el pulso de habilitacion
+			if(h_final)
+				h_contador_siguiente = 0;
+			else
+				h_contador_siguiente = h_contador_reg + 1;
+		else
+			h_contador_siguiente=h_contador_reg;
+
+	//verticales
+	always@*
+		if ((pixel_tick) & (enable2tick) & (h_final)) //cuenta solo si se da el pulso de habilitacion
+			if(v_final)
+				v_contador_siguiente=0;
+			else
+				v_contador_siguiente= v_contador_reg+1;
+		else
+			v_contador_siguiente=v_contador_reg;
+
+
+
+
+
+	//buffers para evitar fallas, recomendacion de Pong Chu
+	assign h_sync_next=(h_contador_reg>=(Horizontal_Display+Horizontal_back_border) && h_contador_reg<=(Horizontal_Display+Horizontal_back_border+Hor_retrace-1));
+	assign v_sync_next=(v_contador_reg>=(Ver_Display+Ver_right_border) && v_contador_reg<=(Ver_Display+Ver_right_border+Ver_retrace-1));
+
+	//asignacion a las salidas
+
+	assign video_activado=(h_contador_reg<Horizontal_Display) && (v_contador_reg<Ver_Display);
+
+	assign hsync= ~h_sync_reg;
+	assign vsync= ~v_sync_reg;
+	assign pixel_x= h_contador_reg;
+	assign pixel_y= v_contador_reg;
+	assign instante_pulso=pixel_tick;
 
 endmodule
