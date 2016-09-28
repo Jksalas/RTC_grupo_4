@@ -179,7 +179,7 @@ end
 
           always @(posedge clk)
           if (reset) begin
-              letter_rgb<=0;
+              letter_rgb<=12'hfff;
               state<=0;
               end
           else begin
@@ -224,7 +224,7 @@ reg [11:0] rgbtext1;
 
       always@*
         if(~video_on)
-              rgbtext1<=0;
+              rgbtext1<=12'hfff;
           else begin
                 if ( timer_1  | timer_2  | timer_3 | timer_4 | timer_5 | timer_6)
                     rgbtext1 <= letter_rgb;
