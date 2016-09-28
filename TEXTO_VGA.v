@@ -19,7 +19,7 @@
 //Creador:
 // Joao Salas Ramirez
 //////////////////////////////////////////////////////////////////////////////////
-module GENERADOR(
+mmodule TEXTO(
 
 	 input [9:0] pix_y, pix_x,
 	 input wire video_on,
@@ -76,7 +76,11 @@ module GENERADOR(
 	assign Mon =	(96<=pix_x) && (pix_x<=111) &&(320<=pix_y) && (pix_y<=351);
 
 
-//este parte se utiliza para imprimir las letras de acuerdo a la coordenada, es una maquina de estados camuflada
+/*
+input okfechaword;
+input okhoraword;
+input oktimerword;
+*/
 always @(posedge clk,posedge reset) begin
 	if(reset) begin
 		AD<=0;
@@ -148,10 +152,10 @@ always @(posedge clk,posedge reset) begin
 
 	always @*
 	if(reset)
-			letter_rgb<=0;
+			letter_rgb<=12'hfff;
 	else begin
 		if (pixelbit)
-			letter_rgb <= 12'hccc;
+			letter_rgb <= 12'hfff;
 		else
 			letter_rgb <= 0;end
 
