@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company:  Laboratorio Sistemas Digitales TEC
-// Engineer: Danny Mejías, Joao Salas, Javier Cordero
+// Engineer: Danny MejÃ­as, Joao Salas, Javier Cordero
 // 
 // Create Date:    20:38:05 09/14/2016 
 // Design Name: 	 Ruta de Datos
@@ -18,184 +18,286 @@
 // Additional Comments: 
 //
 //////////////////////////////////////////////////////////////////////////////////
-module Controlador_RTC(
-    input clock,reset,BTNP,BTNU,BTND,BTNR,BTNL,switchp,IRQ,ringoff,
-	 output hsync,vsync,
-	 output ADo,CSo,RDo,WRo,
-	 inout  [7:0] AdressDatao,
-    output [2:0] rgb,
-	 output [1:0] mstate,
-	 output [3:0] istate, Lstate, ustate,
-	 output [2:0] PFHstate, PTstate, rstate, wstate,
-	 output win
+module ControlUsuario (
+	input clk, reset, BTNP, BTNR, BTNL, BTNU, BTND, CTRL_Switch, //Declarion de  entradas y salidas
+	input [1:0] mstate,
+	output reg [3:0] state, dir , // variables de estado
+	output reg [7:0] diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw
+	) ;
 
-    );
-	 
-reg AD,CS,RD,WR;
-assign {ADo,CSo,RDo,WRo} = {AD,CS,RD,WR};	 
-reg [7:0] AdressData;
-assign AdressDatao = AdressData;
-//wire PFH, PT, donew, doner, wrmuxseleco, win, rin;
-wire [7:0] datai, address;
-/*
-wire [1:0] mstate;
-wire [3:0] istate, Lstate, ustate;
-wire [2:0] PFHstate, PTstate, rstate, wstate;
-*/
-reg TS;
-reg selecAD;
-reg [7:0] outAD,datamux,userdata;
-wire [7:0] diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw;	 
+reg [3:0] next_state;
+parameter [3:0] P0 = 4'b0000; //Hold State
+parameter [3:0] RoT = 4'b0001; //Decision Timer o Reloj
+parameter [3:0] Rrst = 4'b0010; //Reset reloj
+parameter [3:0] Rdia = 4'b0011; //Programar dï¿½a reloj
+parameter [3:0] Rmes = 4'b0100; //Programar mes reloj
+parameter [3:0] Ranno = 4'b0101; //Programar aï¿½o reloj
+parameter [3:0] Rhora = 4'b0110; //Programar hora reloj
+parameter [3:0] Rmin = 4'b0111; //Programar minutos reloj
+parameter [3:0] Rseg = 4'b1000; //Programar segundos reloj
+parameter [3:0] Trst = 4'b1001; //Reseteo timer
+parameter [3:0] Thora = 4'b1010; //Programar hora crono
+parameter [3:0] Tmin = 4'b1011; //Programar minutos crono
+parameter [3:0] Tseg = 4'b1100; //Programar segundos crono
+parameter [3:0] A = 4'b1101;
 
-FSM_RTC Master(clock, reset,PFH, PT, doner, donew, wrmuxselec, win, rin, datatype, datai, address, mstate, istate, Lstate, PFHstate, PTstate);
-ReadCycle Lectura(clock, reset, rin, readselec, doner, rstate, rAD, rCS, rRD, rWR, rTS, reg_enable) ;
-WriteCycle Escritura(clock, reset, win, writeselec, donew, wstate, wAD, wCS, wRD, wWR, wTS) ;
-
-ControlUsuario Usuario(clock, reset, BTNP, BTNR, BTNL, BTNU, BTND, switchp, ustate, diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw) ;
-
-
-assign PFH = BTNP & ~switchp;
-assign PT = BTNP & switchp;
-
-always @*
-	case (mstate)
-		2'b00: {AD,CS,RD,WR,TS} = {wAD,wCS,wRD,wWR,wTS};
-		2'b01: {AD,CS,RD,WR,TS} = {rAD,rCS,rRD,rWR,rTS};
-		2'b10: {AD,CS,RD,WR,TS} = {wAD,wCS,wRD,wWR,wTS};
-		2'b11: {AD,CS,RD,WR,TS} = {wAD,wCS,wRD,wWR,wTS};
-		default: {AD,CS,RD,WR,TS} = {wAD,wCS,wRD,wWR,wTS};
-	endcase	
-
-//Multiplexor de Data de Usuario
-always @*
-	if (mstate == 2'b10)
-		case (PFHstate)
-		3'b000: userdata = 8'h00;
-		3'b001: userdata = annow;
-		3'b010: userdata = mesw;
-		3'b011: userdata = diaw;
-		3'b100: userdata = rhoraw;
-		3'b101: userdata = rminw;
-		3'b110: userdata = rsegw;
-		3'b111: userdata = 8'h00;
-		default : userdata = 8'h00;
+	always @* begin //Lï¿½gica de siguiente estado
+		case(state)
+			P0: next_state = (((mstate == 2'b10) || (mstate == 2'b11)) && (BTNP == 1'b0)) ? RoT:P0; //O tambien pueden ser las mismas senales de transicion de la Master
+			RoT: next_state = CTRL_Switch ? Trst: Rrst;
+			Rrst: next_state = Rdia;
+			Rdia: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Rmes;
+					else if (BTNL)
+						next_state = Rseg;
+					else
+						next_state = Rdia;
+			Rmes: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Ranno;
+					else if (BTNL)
+						next_state = Rdia;
+					else
+						next_state = Rmes;
+			Ranno: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Rhora;
+					else if (BTNL)
+						next_state = Rmes;
+					else
+						next_state = Ranno;
+			Rhora: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Rmin;
+					else if (BTNL)
+						next_state = Ranno;
+					else
+						next_state = Rhora;
+			Rmin: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Rseg;
+					else if (BTNL)
+						next_state = Rhora;
+					else
+						next_state = Rmin;
+			Rseg: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Rdia;
+					else if (BTNL)
+						next_state = Rmin;
+					else
+						next_state = Rseg;
+			Trst: next_state = Thora;
+			Thora: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Tmin;
+					else if (BTNL)
+						next_state = Tseg;
+					else
+						next_state = Thora;
+			Tmin: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Tseg;
+					else if (BTNL)
+						next_state = Thora;
+					else
+						next_state = Tmin;
+			Tseg: if (BTNP)
+						next_state = P0;
+					else if (BTNR)
+						next_state = Thora;
+					else if (BTNL)
+						next_state = Tmin;
+					else
+						next_state = Tseg;
+			default: next_state = P0;
 		endcase
-	else
-		if (mstate == 2'b11)
-			case (PTstate)
-				3'b000: userdata = 8'h00;
-				3'b001: userdata = thoraw;
-				3'b010: userdata = tminw;
-				3'b011: userdata = tsegw;
-				3'b100: userdata = 8'h00;
-				default : userdata = 8'h00;
-			endcase
-		else
-			userdata = 8'h00;
+	end
 
-//Multiplexor de tipo de Data
-always @*
-	case (datatype)
-		1'b0: datamux = userdata;
-		1'b1: datamux = datai;
-		default : datamux = datai;
-	endcase
+	//Control de Usuarios por botones
+	always @(posedge clk, posedge reset)
+		if (reset)
+			{diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} = {8'h0,8'h0,8'h0,8'h0,8'h0,8'h0,8'h0,8'h0,8'h0,4'h0} ;
+		else begin
+		{diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} = {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} ;
+		case(state)
+		   P0:{diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} = {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} ;
+			Rrst: {diaw, mesw, annow, rhoraw, rminw, rsegw, dir} = {8'h1, 8'h1, 8'h0, 8'h0, 8'h0, 8'h0, 4'h0 } ;
+			Rdia: begin
+					dir = 4'h3;
+					if (BTNU)
+						if (diaw == 8'h31)
+							diaw = 8'h1;
+						else if (diaw[3:0] == 4'h9)
+							diaw = diaw + 8'h7;
+						else
+							diaw = diaw + 8'h1;
+					else
+						if (BTND)
+							if (diaw == 8'h0)
+								diaw = 8'h31;
+							else if (diaw[3:0] == 4'h0)
+								diaw = diaw - 8'h7;
+							else
+							diaw = diaw - 8'h1;
+					end
+			Rmes: begin
+					dir = 4'h4;
+					if (BTNU)
+						if (mesw == 8'h12)
+							mesw = 8'h1;
+						else if (mesw[3:0] == 4'h9)
+							mesw = mesw + 8'h7;
+						else
+							mesw = mesw + 8'h1;
+					else if (BTND)
+						if (mesw == 8'h1)
+							mesw = 8'h12;
+						else if (mesw[3:0] == 4'h0)
+							mesw = mesw - 8'h7;
+						else
+							mesw = mesw - 8'h1;
+					end
+			Ranno: begin
+					dir = 4'h5;
+					if (BTNU)
+						if (annow == 8'h99)
+							annow = 8'h0;
+						else if (annow[3:0] == 4'h9)
+							annow = annow + 8'h7;
+						else
+							annow = annow + 8'h1;
+					else if (BTND)
+						if (annow == 8'h0)
+							annow = 8'h99;
+						else if (annow[3:0] == 4'h0)
+							annow = annow - 8'h7;
+						else
+							annow = annow - 8'h1;
+					end
+			Rhora:begin
+					dir = 4'h0;
+					if (BTNU)
+						if (rhoraw == 8'h23)
+							rhoraw = 8'h0;
+						else if (rhoraw[3:0] == 4'h9)
+							rhoraw = rhoraw + 8'h7;
+						else
+							rhoraw = rhoraw + 8'h1;
+					else if (BTND)
+						if (rhoraw == 8'h0)
+							rhoraw = 8'h23;
+						else if (rhoraw[3:0] == 4'h0)
+							rhoraw = rhoraw - 8'h7;
+						else
+							rhoraw = rhoraw - 8'h1;
+					end
+			Rmin: begin
+					dir = 4'h1;
+					if (BTNU)
+						if (rminw == 8'h59)
+							rminw = 8'h0;
+						else if (rminw[3:0] == 4'h9)
+							rminw = rminw + 8'h7;
+						else
+							rminw = rminw + 8'h1;
+					else if (BTND)
+						if (rminw == 8'h0)
+							rminw = 8'h59;
+						else if (rminw[3:0] == 4'h0)
+							rminw = rminw - 8'h7;
+						else
+							rminw = rminw - 8'h1;
+					end
+			Rseg: begin
+					dir = 4'h2;
+					if (BTNU)
+						if (rsegw == 8'h59)
+							rsegw= 8'h0;
+						else if (rsegw[3:0] == 4'h9)
+							rsegw = rsegw + 8'h7;
+						else
+							rsegw = rsegw + 8'h1;
+					else if (BTND)
+						if (rsegw == 8'h0)
+							rsegw = 8'h59;
+						else if (rsegw[3:0] == 4'h0)
+							rsegw = rsegw - 8'h7;
+						else
+							rsegw = rsegw - 8'h1;
+					end
+			Trst: {thoraw, tminw, tsegw, dir} = {8'b0, 8'b0, 8'b0, 4'h0} ;
+			Thora: begin
+					dir = 4'h6;
+					if (BTNU)
+						if (thoraw == 8'h23)
+							thoraw = 8'h0;
+						else if (thoraw[3:0] == 4'h9)
+							thoraw = thoraw + 8'h7;
+						else
+							thoraw = thoraw + 8'h1;
+					else if (BTND)
+						if (thoraw == 8'h0)
+							thoraw = 8'h23;
+						else if (thoraw[3:0] == 4'h0)
+							thoraw = thoraw - 8'h7;
+						else
+							thoraw = thoraw - 8'h1;
+					end
+			Tmin: begin
+					dir = 4'h7;
+					if (BTNU)
+						if (tminw == 8'h59)
+							tminw = 8'h0;
+						else if (tminw[3:0] == 4'h9)
+							tminw = tminw + 8'h7;
+						else
+							tminw = tminw + 8'h1;
+					else if (BTND)
+						if (tminw == 8'h0)
+							tminw = 8'h59;
+						else if (tminw[3:0] == 4'h0)
+							tminw = tminw - 8'h7;
+						else
+							tminw = tminw - 8'h1;
+					end
+			Tseg: begin
+					dir = 4'h8;
+					if (BTNU)
+						if (tsegw == 8'h59)
+							tsegw= 8'h0;
+						else if (tsegw[3:0] == 4'h9)
+							tsegw = tsegw + 8'h7;
+						else
+							tsegw = tsegw + 8'h1;
+					else if (BTND)
+						if (tsegw == 8'h0)
+							tsegw = 8'h59;
+						else if (tsegw[3:0] == 4'h0)
+							tsegw = tsegw - 8'h7;
+						else
+							tsegw = tsegw - 8'h1;
+					end
+			A: {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw,dir} = {8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff, 8'hff , 4'hf} ;
+			default: {diaw, mesw, annow, rhoraw, rminw, rsegw, thoraw, tminw, tsegw, dir} = {8'h1, 8'h1, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0, 8'h0, 4'h0 } ; //Evita warning de Latch
+		endcase
+	end
 
-//Multiplexor de seleccion A/D
-always @*
-	case (wrmuxselec)
-		1'b0: selecAD = readselec;
-		1'b1: selecAD = writeselec;
-		default : selecAD = readselec;
-	endcase
-	
-//Multiplexor A/D
-always @*
-	case (selecAD)
-		1'b0: outAD = address;
-		1'b1: outAD = datamux;
-		default : outAD = address;
-	endcase	
-		
-//Buffer de Tercer Estado
-always @*
-	if (TS)
-		AdressData = 8'hzz;
-	else
-		AdressData = outAD;
-
-//Registro de Datos Leídos
-reg [7:0] anno_vga,
-			 mes_vga,
-			 dia_vga,
-			 rhora_vga,
-			 rmin_vga,
-			 rseg_vga,
-			 thora_vga,
-			 tmin_vga,
-			 tseg_vga;
-always @*
-	case (Lstate)
-		4'b0000: {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
-		4'b0001: {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
-		4'b0010: if (reg_enable)
-						anno_vga = AdressDatao;
-					else
-						anno_vga = anno_vga;
-		4'b0011: if (reg_enable)
-						mes_vga = AdressDatao;
-					else
-						mes_vga = mes_vga;
-		4'b0100: if (reg_enable)
-						dia_vga = AdressDatao;
-					else
-						dia_vga = dia_vga;
-		4'b0101: if (reg_enable)
-						rhora_vga = AdressDatao;
-					else
-						rhora_vga = rhora_vga;
-		4'b0110: if (reg_enable)
-						rmin_vga = AdressDatao;
-					else
-						rmin_vga = rmin_vga;
-		4'b0111: if (reg_enable)
-						rseg_vga = AdressDatao;
-					else
-						rseg_vga = rseg_vga;
-		4'b1000: if (reg_enable)
-						thora_vga = AdressDatao;
-					else
-						thora_vga = thora_vga;
-		4'b1001: if (reg_enable)
-						tmin_vga = AdressDatao;
-					else
-						tmin_vga = tmin_vga;
-		4'b1010: if (reg_enable)
-						tseg_vga = AdressDatao;
-					else
-						tseg_vga = tseg_vga;
-		default: {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
-	endcase
-	
-
-//Multiplexor VGA
-reg [7:0] anno,
-			 mes,
-			 dia,
-			 rhora,
-			 rmin,
-			 rseg,
-			 thora,
-			 tmin,
-			 tseg;
-always @*
-	if (wrmuxselec)
-		{anno,mes,dia,rhora,rmin,rseg,thora,tmin,tseg} = {annow,mesw,diaw,rhoraw,rminw,rsegw,thoraw,tminw,tsegw};
-	else
-		{anno,mes,dia,rhora,rmin,rseg,thora,tmin,tseg} = {anno_vga,mes_vga,dia_vga,rhora_vga,rmin_vga,rseg_vga,thora_vga,tmin_vga,tseg_vga};
-
-
-
-
+	always @(posedge clk, posedge reset)
+		begin
+			if (reset)
+				state <= P0;
+			else
+				state <= next_state;
+		end
 
 endmodule
