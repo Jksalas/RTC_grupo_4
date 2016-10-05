@@ -1,7 +1,7 @@
 `timescale 1ns / 1ps
 //////////////////////////////////////////////////////////////////////////////////
 // Company:  Laboratorio Sistemas Digitales TEC
-// Engineer: Danny Mejías, Joao Salas, Javier Cordero
+// Engineer: Danny MejÃ­as, Joao Salas, Javier Cordero
 // 
 // Create Date:    15:18:49 09/12/2016 
 // Design Name:    Ruta de Control
@@ -22,34 +22,42 @@ module FSM_RTC(
     input wire clock, reset, PFH, PT, doner, donew,
     output wire wrmuxseleco, wino, rino, datatypeo,
 	 output wire [7:0]dataio, [7:0]addresso,
-	 output wire [1:0] mstate, [3:0] istate, [3:0] Lstate, [2:0] PFHstate, [2:0] PTstate
+	 output wire [1:0] mstate, [4:0] istate, [3:0] Lstate, [2:0] PFHstate, [2:0] PTstate,
+	 input BTNP,
+	 input [3:0] ustate,
+	 output OK,Endpfh,Endpt,
+	 input [9:0] pixX,pixY
     );
 
-wire Endi,Endpfh,Endpt,OK;
-	 
-//Declaración de Estados Master FSM
+wire Endi/*,Endpfh,Endpt,OK*/;
+
+//Declaraciï¿½n de Estados Master FSM
 localparam [1:0] m0 = 2'b00,
 					  m1 = 2'b01,
 					  m2 = 2'b10,
 					  m3 = 2'b11;
 
-//Declaración de Estados Inicio FSM
-localparam [3:0] i0 = 4'b0000,
-					  i1 = 4'b0001,
-					  i2 = 4'b0010,
-					  i3 = 4'b0011,
-					  i4 = 4'b0100,
-					  i5 = 4'b0101,
-					  i6 = 4'b0110,
-					  i7 = 4'b0111,
-					  i8 = 4'b1000,
-					  i9 = 4'b1001,
-					  i10 = 4'b1010,
-					  i11 = 4'b1011,
-					  i12 = 4'b1100,
-					  i13 = 4'b1101;
-					  
-//Declaración de Estados Lectura Standby FSM
+//Declaraciï¿½n de Estados Inicio FSM
+localparam [4:0] i0 = 5'b00000,
+					  i1 = 5'b00001,
+					  i2 = 5'b00010,
+					  i3 = 5'b00011,
+					  i4 = 5'b00100,
+					  i5 = 5'b00101,
+					  i6 = 5'b00110,
+					  i7 = 5'b00111,
+					  i8 = 5'b01000,
+					  i9 = 5'b01001,
+					  i10 = 5'b01010,
+					  i11 = 5'b01011,
+					  i12 = 5'b01100,
+					  i13 = 5'b01101,
+					  i14 = 5'b01110,
+					  i15 = 5'b01111,
+					  i16 = 5'b10000;
+
+
+//Declaraciï¿½n de Estados Lectura Standby FSM
 localparam [3:0] L0 = 4'b0000,
 					  L1 = 4'b0001,
 					  L2 = 4'b0010,
@@ -61,8 +69,8 @@ localparam [3:0] L0 = 4'b0000,
 					  L8 = 4'b1000,
 					  L9 = 4'b1001,
 					  L10 = 4'b1010;
-					  
-//Declaración de Estados Programar Fecha/Hora FSM
+
+//Declaraciï¿½n de Estados Programar Fecha/Hora FSM
 localparam [2:0] PFH0 = 3'b000,
 					  PFH1 = 3'b001,
 					  PFH2 = 3'b010,
@@ -70,18 +78,20 @@ localparam [2:0] PFH0 = 3'b000,
 					  PFH4 = 3'b100,
 					  PFH5 = 3'b101,
 					  PFH6 = 3'b110,
-					  PFH7 = 3'b111;	
+					  PFH7 = 3'b111;
 
-//Declaración de Estados Programar Temporizador FSM
+//Declaraciï¿½n de Estados Programar Temporizador FSM
 localparam [2:0] PT0 = 3'b000,
 					  PT1 = 3'b001,
 					  PT2 = 3'b010,
 					  PT3 = 3'b011,
-					  PT4 = 3'b100;			  					  
-					  
-//Declaración de señales
+					  PT4 = 3'b100,
+					  PT5 = 3'b101,
+            PT6 = 3'b110;
+
+//Declaraciï¿½n de seï¿½ales
 reg [1:0] estado_actual_m , estado_siguiente_m ;
-reg [3:0] estado_actual_i , estado_siguiente_i ;
+reg [4:0] estado_actual_i , estado_siguiente_i ;
 reg [3:0] estado_actual_L , estado_siguiente_L ;
 reg [2:0] estado_actual_PFH , estado_siguiente_PFH ;
 reg [2:0] estado_actual_PT , estado_siguiente_PT ;
@@ -92,7 +102,7 @@ assign PFHstate = estado_actual_PFH;
 assign PTstate = estado_actual_PT;
 assign istate = estado_actual_i;
 
-//Registro de Estados Master FSM 
+//Registro de Estados Master FSM
 always @(posedge clock, posedge reset)
 	if (reset)
 		estado_actual_m <= m0;
@@ -112,25 +122,25 @@ always @(posedge clock, posedge reset)
 		estado_actual_L <= L0;
 	else
 		estado_actual_L <= estado_siguiente_L;
-		
+
 //Registro de Estados Programar Fecha/Hora FSM
 always @(posedge clock, posedge reset)
 	if (reset)
 		estado_actual_PFH <= PFH0;
 	else
 		estado_actual_PFH <= estado_siguiente_PFH;
-		
+
 //Registro de Estados Programar Temporizador FSM
 always @(posedge clock, posedge reset)
 	if (reset)
 		estado_actual_PT <= PT0;
 	else
-		estado_actual_PT <= estado_siguiente_PT;		
-		
+		estado_actual_PT <= estado_siguiente_PT;
 
 
 
-//Lógica de Estado Siguiente Master FSM
+
+//Lï¿½gica de Estado Siguiente Master FSM
 always @*
 	case (estado_actual_m)
 		m0: if (Endi)
@@ -157,8 +167,8 @@ always @*
 				estado_siguiente_m = m3;
 		default : estado_siguiente_m = m1;
 	endcase
-	
-//Lógica de Estado Siguiente Inicio FSM
+
+//Lï¿½gica de Estado Siguiente Inicio FSM
 always @*
 	case (estado_actual_i)
 		i0: if (estado_actual_m == m0)
@@ -214,17 +224,30 @@ always @*
 			 else
 				estado_siguiente_i = i12;
 		i13: if (donew)
-				estado_siguiente_i = i0;
+				estado_siguiente_i = i14;
 			 else
 				estado_siguiente_i = i13;
+		i14: if (donew)
+				estado_siguiente_i = i15;
+			 else
+				estado_siguiente_i = i14;
+		i15: if (donew)
+				estado_siguiente_i = i16;
+			 else
+				estado_siguiente_i = i15;
+		i16: if (donew)
+				estado_siguiente_i = i0;
+			 else
+				estado_siguiente_i = i16;
+
 		default : estado_siguiente_i = i0;
 	endcase
 
 
-//Lógica de Estado Siguiente Lectura Standby FSM
+//Lï¿½gica de Estado Siguiente Lectura Standby FSM
 always @*
 	case (estado_actual_L)
-		L0: if (estado_actual_m == m1)
+		L0: if ((estado_actual_m == m1) && (pixX == 10'b0) && (pixY == 10'b0))
 				estado_siguiente_L = L1;
 			 else
 				estado_siguiente_L = L0;
@@ -268,15 +291,15 @@ always @*
 				estado_siguiente_L = L0;
 			 else
 				estado_siguiente_L = L10;
-		
+
 		default : estado_siguiente_L = L0;
 	endcase
 
 
-//Lógica de Estado Siguiente Programar Fecha/Hora FSM
+//Lï¿½gica de Estado Siguiente Programar Fecha/Hora FSM
 always @*
 	case (estado_actual_PFH)
-		PFH0: if (estado_actual_m == m2)
+		PFH0: if ((estado_actual_m == m2)&& BTNP && (ustate!=4'h0))
 				estado_siguiente_PFH = PFH1;
 			 else
 				estado_siguiente_PFH = PFH0;
@@ -312,10 +335,10 @@ always @*
 	endcase
 
 
-//Lógica de Estado Siguiente Programar Temporizador FSM
+//Lï¿½gica de Estado Siguiente Programar Temporizador FSM
 always @*
 	case (estado_actual_PT)
-		PT0: if (estado_actual_m == m3)
+		PT0: if ((estado_actual_m == m3)&& BTNP && (ustate!=4'h0))
 				estado_siguiente_PT = PT1;
 			 else
 				estado_siguiente_PT = PT0;
@@ -332,9 +355,17 @@ always @*
 			 else
 				estado_siguiente_PT = PT3;
 		PT4: if (donew)
-				estado_siguiente_PT = PT0;
+				estado_siguiente_PT = PT5;
 			 else
 				estado_siguiente_PT = PT4;
+		PT5: if (donew)
+				estado_siguiente_PT = PT6;
+			 else
+				estado_siguiente_PT = PT5;
+    PT6: if (donew)
+    		estado_siguiente_PT = PT0;
+    	 else
+    		estado_siguiente_PT = PT6;
 		default : estado_siguiente_PT = PT0;
 	endcase
 
@@ -359,15 +390,15 @@ assign datatypeo = datatype;
 assign dataio = datai;
 assign addresso = address;
 
-//Transición de estados FSM
-assign Endi = (estado_actual_i == i13 && donew);
+//Transiciï¿½n de estados FSM
+assign Endi = (estado_actual_i == i16 && donew);
 assign Endpfh = (estado_actual_PFH == PFH7 && donew);
-assign Endpt = (estado_actual_PT == PT4 && donew);
+assign Endpt = (estado_actual_PT == PT6 && donew);
 assign OK = (estado_actual_L == L10 && doner);
 
 
-//Señal selectora de Mux A/D y Mux VGA
-always @(estado_actual_m)
+//Seï¿½al selectora de Mux A/D y Mux VGA
+always @*
 	case (estado_actual_m)
 		m0: wrmuxselec = 1'b1;
 		m1: wrmuxselec = 1'b0;
@@ -375,19 +406,19 @@ always @(estado_actual_m)
 		m3: wrmuxselec = 1'b1;
 		default : wrmuxselec = 1'b0;
 	endcase
-	
-//Señal selectora de Datai o Userdata
-always @(estado_actual_m)
+
+//Seï¿½al selectora de Datai o Userdata
+always @*
 	case (estado_actual_m)
 		m0: datatype = 1'b1;
 		m1: datatype = 1'b0;
 		m2: datatype = 1'b0;
 		m3: datatype = 1'b0;
 		default : datatype = 1'b1;
-	endcase	
+	endcase
 
-//Datos y Direcciones de Inicialización
-always @(estado_actual_i)
+//Datos y Direcciones de Inicializaciï¿½n
+always @*
 	case (estado_actual_i)
 		i0: {datai,addri} = {8'h00,8'h00};
 		i1: {datai,addri} = {8'h10,8'h02};
@@ -396,21 +427,24 @@ always @(estado_actual_i)
 		i4: {datai,addri} = {8'h00,8'h21};
 		i5: {datai,addri} = {8'h00,8'h22};
 		i6: {datai,addri} = {8'h00,8'h23};
-		i7: {datai,addri} = {8'h00,8'h24};
-		i8: {datai,addri} = {8'h00,8'h25};
+		i7: {datai,addri} = {8'h01,8'h24};
+		i8: {datai,addri} = {8'h01,8'h25};
 		i9: {datai,addri} = {8'h00,8'h26};
-		i10:{datai,addri} = {8'h00,8'h27};
+		i10:{datai,addri} = {8'h01,8'h27};
 		i11:{datai,addri} = {8'h00,8'h28};
-		i12:{datai,addri} = {8'hF2,8'hF2}; 
-		i13:{datai,addri} = {8'hF2,8'hF2};
-		default : {datai,addri} = {8'h00,8'h21};	  
+		i12:{datai,addri} = {8'h00,8'h43};
+		i13:{datai,addri} = {8'h00,8'h42};
+		i14:{datai,addri} = {8'h00,8'h41};
+		i15:{datai,addri} = {8'hF0,8'hF0};  //clock transfer command
+		i16:{datai,addri} = {8'h04,8'h01}; //Timer Mask
+		default : {datai,addri} = {8'h00,8'h21};
 	endcase
 
 //Direcciones de Standby (Lectura)
-always @(estado_actual_L)
+always @*
 	case (estado_actual_L)
 		L0: addrL = 8'h00;
-		L1: addrL = 8'hF1;
+		L1: addrL = 8'hF0;
 		L2: addrL = 8'h26;
 		L3: addrL = 8'h25;
 		L4: addrL = 8'h24;
@@ -420,11 +454,11 @@ always @(estado_actual_L)
 		L8: addrL = 8'h43;
 		L9: addrL = 8'h42;
 		L10:addrL = 8'h41;
-		default : addrL = 8'h21;	  
+		default : addrL = 8'h21;
 	endcase
 
 //Direcciones para Programar Fecha/Hora
-always @(estado_actual_PFH)
+always @*
 	case (estado_actual_PFH)
 		PFH0: addrPFH = 8'h00;
 		PFH1: addrPFH = 8'h26;
@@ -434,19 +468,21 @@ always @(estado_actual_PFH)
 		PFH5: addrPFH = 8'h22;
 		PFH6: addrPFH = 8'h21;
 		PFH7: addrPFH = 8'hF1;
-		default : addrPFH = 8'h21;	  
+		default : addrPFH = 8'h21;
 	endcase
 
 //Direcciones para Programar Temporizador
-always @(estado_actual_PT)
+always @*
 	case (estado_actual_PT)
 		PT0: addrPT = 8'h00;
 		PT1: addrPT = 8'h43;
 		PT2: addrPT = 8'h42;
 		PT3: addrPT = 8'h41;
 		PT4: addrPT = 8'hF2;
-		
-		default : addrPT = 8'h41;	  
+		PT5: addrPT = 8'h00;
+    PT6: addrPT = 8'h01;
+
+		default : addrPT = 8'h41;
 	endcase
 
 //Enable de procesos escritura
@@ -454,18 +490,18 @@ always @*
 	case (estado_actual_m)
 		m0: if (estado_actual_i != i0)
 				win = 1'b1;
-			 else	
+			 else
 				win = 1'b0;
-				
+
 		m1: win = 1'b0;
-		
+
 		m2: if (estado_actual_PFH != PFH0)
 				win = 1'b1;
-			 else	
+			 else
 				win = 1'b0;
 		m3: if (estado_actual_PT != PT0)
 				win = 1'b1;
-			 else	
+			 else
 				win = 1'b0;
 		default : win = 1'b0;
 	endcase
@@ -474,10 +510,10 @@ always @*
 always @*
 	case (estado_actual_m)
 		m0: rin = 1'b0;
-				
+
 		m1: if (estado_actual_L != L0)
 				rin = 1'b1;
-			 else	
+			 else
 				rin = 1'b0;
 		m2: rin = 1'b0;
 		m3: rin = 1'b0;
